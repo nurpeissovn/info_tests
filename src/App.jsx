@@ -598,6 +598,65 @@ function StudentAnalysisScreen({ result, currentIndex, onSelectQuestion, onPrevi
   );
 }
 
+function ScoreRevealScreen({ result, onRestart, onAnalyzeAgain }) {
+  const scoreStyle = {
+    "--score-percentage": `${Math.max(0, Math.min(100, result.percentage))}%`
+  };
+
+  return (
+    <main className="page-shell">
+      <section className="score-reveal" aria-labelledby="score-reveal-title">
+        <div className="score-reveal__content">
+          <div className="score-reveal__eyebrow">Analysis Complete</div>
+          <h1 id="score-reveal-title">
+            {result.student.name} {result.student.surname}
+          </h1>
+          <p className="score-reveal__subtitle">{result.testTitle}</p>
+
+          <div className="score-reveal__meter" style={scoreStyle} aria-label={`${result.percentage}% score`}>
+            <div className="score-reveal__meter-inner">
+              <span>{result.score}</span>
+              <small>/ {result.totalPoints}</small>
+            </div>
+          </div>
+
+          <div className="score-reveal__stats">
+            <div>
+              <span>Points</span>
+              <strong>
+                {result.score}/{result.totalPoints}
+              </strong>
+            </div>
+            <div>
+              <span>Percentage</span>
+              <strong>{result.percentage}%</strong>
+            </div>
+            <div>
+              <span>Status</span>
+              <strong>{result.passed ? "Passed" : "Keep Practicing"}</strong>
+            </div>
+          </div>
+
+          <div className="score-reveal__emoji-row" aria-hidden="true">
+            <span>🎯</span>
+            <span>📚</span>
+            <span>✨</span>
+          </div>
+
+          <div className="button-row score-reveal__actions">
+            <button className="primary-button primary-button--centered" type="button" onClick={onRestart}>
+              Return To Test Selection
+            </button>
+            <button className="secondary-button primary-button--centered" type="button" onClick={onAnalyzeAgain}>
+              Review Answers Again
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+  );
+}
+
 export default function App() {
   const [studentDraft, setStudentDraft] = useState({ name: "", surname: "", testId: tests[0].id });
   const [student, setStudent] = useState(null);
@@ -1165,9 +1224,13 @@ export default function App() {
         onSelectQuestion={setAnalysisIndex}
         onPrevious={handleAnalysisPrevious}
         onNext={handleAnalysisNext}
-        onFinish={() => setStage("result")}
+        onFinish={() => setStage("score")}
       />
     );
+  }
+
+  if (stage === "score" && result) {
+    return <ScoreRevealScreen result={result} onRestart={restart} onAnalyzeAgain={openStudentAnalysis} />;
   }
 
   return (
