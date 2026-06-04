@@ -28,6 +28,13 @@ const ICONS = {
   analytics: "A"
 };
 
+function createSubmitChallenge() {
+  return {
+    left: Math.floor(Math.random() * 8) + 2,
+    right: Math.floor(Math.random() * 8) + 2
+  };
+}
+
 function attemptFullscreen() {
   const element = document.documentElement;
 
@@ -100,6 +107,48 @@ function DashboardPasswordModal({ password, error, onChange, onSubmit, onCancel 
             </button>
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function SubmitConfirmationModal({ challenge, answer, error, onAnswerChange, onConfirm, onCancel }) {
+  return (
+    <div className="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="submit-confirm-title">
+      <div className="card modal-card">
+        <div className="card__header">
+          <div>
+            <p className="section-label">Confirm Submission</p>
+            <h2 id="submit-confirm-title">Answer Before Submitting</h2>
+          </div>
+        </div>
+
+        <p className="modal-card__text">
+          To avoid accidental submit clicks, solve this: {challenge.left} + {challenge.right} =
+        </p>
+
+        <form className="form-grid" onSubmit={onConfirm}>
+          <label className="field">
+            <span>Answer</span>
+            <input
+              type="number"
+              inputMode="numeric"
+              value={answer}
+              onChange={(event) => onAnswerChange(event.target.value)}
+              placeholder="Enter answer"
+              autoFocus
+            />
+          </label>
+          {error ? <p className="form-error">{error}</p> : null}
+          <div className="button-row">
+            <button className="secondary-button" type="button" onClick={onCancel}>
+              Cancel
+            </button>
+            <button className="primary-button" type="submit">
+              Submit Test
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );
@@ -497,6 +546,10 @@ export default function App() {
   const [dashboardPasswordError, setDashboardPasswordError] = useState("");
   const [isDashboardUnlocked, setIsDashboardUnlocked] = useState(false);
   const [showDashboardPasswordModal, setShowDashboardPasswordModal] = useState(false);
+  const [submitChallenge, setSubmitChallenge] = useState(createSubmitChallenge);
+  const [submitChallengeAnswer, setSubmitChallengeAnswer] = useState("");
+  const [submitChallengeError, setSubmitChallengeError] = useState("");
+  const [showSubmitConfirmationModal, setShowSubmitConfirmationModal] = useState(false);
   const [analyticsSource, setAnalyticsSource] = useState("local");
   const [apiStatusMessage, setApiStatusMessage] = useState("");
   const sessionRef = useRef(null);
@@ -832,6 +885,27 @@ export default function App() {
     setDashboardPasswordError("");
   }
 
+  function requestSubmitConfirmation() {
+    setSubmitChallenge(createSubmitChallenge());
+    setSubmitChallengeAnswer("");
+    setSubmitChallengeError("");
+    setShowSubmitConfirmationModal(true);
+  }
+
+  function confirmSubmitTest(event) {
+    event.preventDefault();
+
+    const expected = submitChallenge.left + submitChallenge.right;
+
+    if (Number(submitChallengeAnswer) !== expected) {
+      setSubmitChallengeError("Wrong answer. Try again before submitting.");
+      return;
+    }
+
+    setShowSubmitConfirmationModal(false);
+    submitTest("Submitted by student.");
+  }
+
   function handleAnswer(questionId, answer) {
     setAnswers((current) => {
       const nextAnswers = {
@@ -938,6 +1012,9 @@ export default function App() {
     setStudent(null);
     setStage("intro");
     setViewMode("student");
+    setShowSubmitConfirmationModal(false);
+    setSubmitChallengeAnswer("");
+    setSubmitChallengeError("");
     setAnswers({});
     setCurrentIndex(0);
     setRemainingSeconds(findTestById(studentDraft.testId).durationMinutes * 60);
@@ -948,20 +1025,32 @@ export default function App() {
 
   if (stage === "active" && student) {
     return (
-      <TestScreen
-        student={student}
-        selectedTest={selectedTest}
-        currentIndex={currentIndex}
-        answers={answers}
-        remainingSeconds={remainingSeconds}
-        warningMessage={warningMessage}
-        violations={violations}
-        onSelectQuestion={handleSelectQuestion}
-        onAnswer={handleAnswer}
-        onPrevious={handlePrevious}
-        onNext={handleNext}
-        onSubmit={() => submitTest("Submitted by student.")}
-      />
+      <>
+        <TestScreen
+          student={student}
+          selectedTest={selectedTest}
+          currentIndex={currentIndex}
+          answers={answers}
+          remainingSeconds={remainingSeconds}
+          warningMessage={warningMessage}
+          violations={violations}
+          onSelectQuestion={handleSelectQuestion}
+          onAnswer={handleAnswer}
+          onPrevious={handlePrevious}
+          onNext={handleNext}
+          onSubmit={requestSubmitConfirmation}
+        />
+        {showSubmitConfirmationModal ? (
+          <SubmitConfirmationModal
+            challenge={submitChallenge}
+            answer={submitChallengeAnswer}
+            error={submitChallengeError}
+            onAnswerChange={setSubmitChallengeAnswer}
+            onConfirm={confirmSubmitTest}
+            onCancel={() => setShowSubmitConfirmationModal(false)}
+          />
+        ) : null}
+      </>
     );
   }
 
