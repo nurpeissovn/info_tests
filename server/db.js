@@ -3,6 +3,7 @@ import pg from "pg";
 const { Pool } = pg;
 
 let pool;
+const memoryAttempts = new Map();
 
 function getConnectionString() {
   return process.env.DATABASE_URL || process.env.POSTGRES_URL || process.env.POSTGRESQL_URL || "";
@@ -71,7 +72,9 @@ export async function listAttempts() {
   const client = getPool();
 
   if (!client) {
-    return [];
+    return Array.from(memoryAttempts.values()).sort(
+      (first, second) => Number(second.submittedAt || 0) - Number(first.submittedAt || 0)
+    );
   }
 
   const result = await client.query(`
@@ -87,7 +90,8 @@ export async function upsertAttempt(record) {
   const client = getPool();
 
   if (!client) {
-    throw new Error("Database is not configured.");
+    memoryAttempts.set(record.attemptId, record);
+    return record;
   }
 
   await client.query(

@@ -129,6 +129,18 @@ function QuestionDetailModal({ question, onClose }) {
   );
 }
 
+function formatSourceLabel(sourceLabel) {
+  if (sourceLabel === "postgres") {
+    return "PostgreSQL";
+  }
+
+  if (sourceLabel === "server-memory") {
+    return "Shared server memory";
+  }
+
+  return "Local browser storage";
+}
+
 function TeacherDashboard({ records, onBack, onLock, sourceLabel = "local", statusMessage = "" }) {
   const [search, setSearch] = useState("");
   const [filterTest, setFilterTest] = useState("all");
@@ -174,7 +186,7 @@ function TeacherDashboard({ records, onBack, onLock, sourceLabel = "local", stat
             <p className="section-label">Teacher Dashboard</p>
             <h1>Class Analytics</h1>
             <p className="dashboard-hero__text">
-              Deep analytics from completed test attempts. Current source: {sourceLabel === "postgres" ? "PostgreSQL" : "Local browser storage"}.
+              Deep analytics from completed test attempts. Current source: {formatSourceLabel(sourceLabel)}.
             </p>
             {statusMessage ? <p className="dashboard-hero__text">{statusMessage}</p> : null}
           </div>

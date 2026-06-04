@@ -58,8 +58,8 @@ app.get("/api/health", async (_request, response) => {
 app.get("/api/results", async (_request, response) => {
   if (!hasDatabaseConfig()) {
     response.json({
-      records: [],
-      source: "database-disabled"
+      records: await listAttempts(),
+      source: "server-memory"
     });
     return;
   }
@@ -87,15 +87,11 @@ app.post("/api/results", async (request, response) => {
     return;
   }
 
-  if (!hasDatabaseConfig()) {
-    response.status(503).json({
-      error: "Database is not configured. Set DATABASE_URL in Railway."
-    });
-    return;
-  }
-
   try {
-    await ensureSchema();
+    if (hasDatabaseConfig()) {
+      await ensureSchema();
+    }
+
     const saved = await upsertAttempt(request.body);
     response.status(201).json({
       record: saved
@@ -122,7 +118,7 @@ app.listen(port, async () => {
       await ensureSchema();
       console.log(`Server ready on port ${port} with PostgreSQL enabled.`);
     } else {
-      console.log(`Server ready on port ${port}. DATABASE_URL is not set, API will use empty remote results.`);
+      console.log(`Server ready on port ${port}. DATABASE_URL is not set, API will use shared in-memory results.`);
     }
   } catch (error) {
     console.error("Server started, but database schema initialization failed:", error);

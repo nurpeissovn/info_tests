@@ -34,7 +34,10 @@ async function request(path, options = {}) {
 
 export async function fetchRemoteResults() {
   const data = await request("/results");
-  return Array.isArray(data.records) ? data.records : [];
+  return {
+    records: Array.isArray(data.records) ? data.records : [],
+    source: data.source || "remote"
+  };
 }
 
 export async function saveRemoteResult(record) {

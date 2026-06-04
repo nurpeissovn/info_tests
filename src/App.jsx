@@ -514,14 +514,14 @@ export default function App() {
     let isMounted = true;
 
     fetchRemoteResults()
-      .then((remoteRecords) => {
+      .then(({ records: remoteRecords, source }) => {
         if (!isMounted) {
           return;
         }
 
         setAnalyticsRecords(mergeAnalyticsRecords(remoteRecords, localRecords));
-        setAnalyticsSource(remoteRecords.length ? "postgres" : "local");
-        setApiStatusMessage(remoteRecords.length ? "Results loaded from PostgreSQL." : "");
+        setAnalyticsSource(source);
+        setApiStatusMessage(remoteRecords.length ? "Results loaded from the shared server." : "Shared server has no records yet.");
       })
       .catch(() => {
         if (!isMounted) {
@@ -871,10 +871,10 @@ export default function App() {
 
   async function refreshRemoteAnalytics(localRecords) {
     try {
-      const remoteRecords = await fetchRemoteResults();
+      const { records: remoteRecords, source } = await fetchRemoteResults();
       setAnalyticsRecords(mergeAnalyticsRecords(remoteRecords, localRecords));
-      setAnalyticsSource(remoteRecords.length ? "postgres" : "local");
-      setApiStatusMessage(remoteRecords.length ? "Results synced to PostgreSQL." : "");
+      setAnalyticsSource(source);
+      setApiStatusMessage("Results synced to the shared server.");
     } catch {
       setAnalyticsRecords(localRecords);
       setAnalyticsSource("local");
