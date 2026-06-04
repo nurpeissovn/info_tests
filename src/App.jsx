@@ -8,7 +8,6 @@ import {
   buildAnalyticsSummary,
   buildResult,
   clearSession,
-  formatDuration,
   formatTimer,
   getRemainingSeconds,
   getTotalPoints,
@@ -460,70 +459,140 @@ function TestScreen({
   );
 }
 
-function ResultScreen({ result, onRestart, onOpenDashboard }) {
+function ResultScreen({ result, onRestart, onAnalyze }) {
   return (
     <main className="page-shell">
       <section className="results-layout">
         <div className="hero-panel hero-panel--result">
           <div>
-            <span className="eyebrow">Result</span>
+            <span className="eyebrow">Completed</span>
             <h1>
               {result.student.name} {result.student.surname}
             </h1>
-            <p>
-              {result.testTitle}: {result.score}/{result.totalPoints} points with {result.percentage}%.
-            </p>
+            <p>{result.testTitle} finished successfully. Your answers were saved.</p>
           </div>
 
-          <div className={`status-pill ${result.passed ? "is-pass" : "is-fail"}`}>
+          <div className="status-pill is-pass">
             <IconBadge value={ICONS.pass} />
             <div>
-              <strong>{result.passed ? "Pass" : "Fail"}</strong>
-              <p>{result.passed ? "Reached the required score." : "Below the required score."}</p>
+              <strong>Submitted</strong>
+              <p>Wait for teacher analysis.</p>
             </div>
           </div>
         </div>
 
-        <section className="metrics-grid metrics-grid--results">
-          <MetricCard icon={ICONS.score} label="Score" value={`${result.score}/${result.totalPoints}`} tone="accent" />
-          <MetricCard icon={ICONS.question} label="Correct" value={result.correctCount} />
-          <MetricCard icon={ICONS.warning} label="Wrong" value={result.wrongCount} tone="danger" />
-          <MetricCard icon={ICONS.timer} label="Time Spent" value={formatDuration(result.timeSpentSeconds)} />
-        </section>
-
-        {TEST_CONFIG.showReview ? (
-          <section className="card review-card">
-            <div className="card__header">
-              <div>
-                <p className="section-label">Answer Review</p>
-                <h2>Detailed Breakdown</h2>
-              </div>
-            </div>
-
-            <div className="review-list">
-              {result.review.map((item, index) => (
-                <article key={`${result.testId}-${item.id}`} className={`review-item ${item.isCorrect ? "is-correct" : "is-wrong"}`}>
-                  <div className="review-item__heading">
-                    <strong>Q{index + 1}</strong>
-                    <span>{item.subject || "General"}</span>
-                  </div>
-                  <p>{item.question}</p>
-                  <p>Your answer: {item.selectedAnswer || "No answer selected"}</p>
-                  <p>Correct answer: {item.correctAnswer}</p>
-                </article>
-              ))}
-            </div>
-          </section>
-        ) : null}
-
         <div className="button-row">
+          <button className="primary-button primary-button--centered" type="button" onClick={onAnalyze}>
+            Go To Analyze
+          </button>
           <button className="primary-button primary-button--centered" type="button" onClick={onRestart}>
             Return To Test Selection
           </button>
-          <button className="secondary-button primary-button--centered" type="button" onClick={onOpenDashboard}>
-            Open Teacher Dashboard
-          </button>
         </div>
+      </section>
+    </main>
+  );
+}
+
+function StudentAnalysisScreen({ result, currentIndex, onSelectQuestion, onPrevious, onNext, onFinish }) {
+  const selectedTest = findTestById(result.testId);
+  const reviewItem = result.review[currentIndex];
+  const question = selectedTest.questions.find((item) => item.id === reviewItem?.id) || selectedTest.questions[currentIndex];
+  const selectedAnswer = reviewItem?.selectedAnswer || "";
+
+  return (
+    <main className="page-shell page-shell--compact">
+      <section className="test-layout">
+        <header className="topbar">
+          <div>
+            <span className="eyebrow">Student Analysis</span>
+            <h1>
+              {result.student.name} {result.student.surname}
+            </h1>
+            <p className="topbar__subline">
+              {result.testTitle} • Question {currentIndex + 1} of {result.review.length}
+            </p>
+          </div>
+
+          <div className="metrics-grid metrics-grid--top">
+            <MetricCard icon={ICONS.question} label="Questions" value={result.review.length} />
+            <MetricCard icon={ICONS.analytics} label="Mode" value="Discuss" tone="accent" />
+          </div>
+        </header>
+
+        <QuestionNavigation
+          questions={result.review}
+          answers={Object.fromEntries(result.review.filter((item) => item.selectedAnswer).map((item) => [item.id, item.selectedAnswer]))}
+          currentQuestionId={reviewItem?.id}
+          onSelectQuestion={onSelectQuestion}
+        />
+
+        <article className="card question-card">
+          <div className="question-card__meta">
+            <span>
+              Question {currentIndex + 1} of {result.review.length}
+            </span>
+            <span>{question?.subject || "Analysis"}</span>
+          </div>
+
+          <div className="question-card__prompt">
+            <h2>{question?.question || reviewItem?.question}</h2>
+            {question?.supportText ? <pre className="question-card__support-text">{question.supportText}</pre> : null}
+          </div>
+
+          {question?.supportImage ? (
+            <div className="question-media">
+              <img
+                className="question-media__support"
+                src={question.supportImage}
+                alt={`${question.question} supporting figure`}
+              />
+            </div>
+          ) : null}
+
+          <div className="options-list" role="list" aria-label={`Question ${currentIndex + 1} selected answer`}>
+            {(question?.options || []).map((option) => {
+              const selected = selectedAnswer === option;
+
+              return (
+                <div key={option} className={`option-card ${selected ? "is-selected" : ""}`} role="listitem">
+                  <span className="option-card__indicator" />
+                  <span className="option-card__text">{option}</span>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="review-list">
+            <div className="review-item">
+              <div className="review-item__heading">
+                <strong>Student Answer</strong>
+                <span>{selectedAnswer ? "Selected" : "Empty"}</span>
+              </div>
+              <p>{selectedAnswer || "No answer selected"}</p>
+            </div>
+          </div>
+
+          <div className="question-card__actions">
+            <button className="secondary-button" type="button" onClick={onPrevious} disabled={currentIndex === 0}>
+              Previous
+            </button>
+
+            <div className="button-row">
+              <button
+                className="secondary-button"
+                type="button"
+                onClick={onNext}
+                disabled={currentIndex === result.review.length - 1}
+              >
+                Next
+              </button>
+              <button className="primary-button" type="button" onClick={onFinish}>
+                Finish Analysis
+              </button>
+            </div>
+          </div>
+        </article>
       </section>
     </main>
   );
@@ -537,6 +606,7 @@ export default function App() {
   const [viewMode, setViewMode] = useState("student");
   const [answers, setAnswers] = useState({});
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [analysisIndex, setAnalysisIndex] = useState(0);
   const [remainingSeconds, setRemainingSeconds] = useState(findTestById(tests[0].id).durationMinutes * 60);
   const [violations, setViolations] = useState(0);
   const [warningMessage, setWarningMessage] = useState("");
@@ -615,6 +685,7 @@ export default function App() {
         setSelectedTestId(resumedTest.id);
         setStudentDraft({ ...saved.student, testId: resumedTest.id });
         setStage("result");
+        setAnalysisIndex(0);
         clearSession();
         const nextLocalRecords = appendAnalyticsRecord(expiredResult);
         setAnalyticsRecords(nextLocalRecords);
@@ -651,6 +722,7 @@ export default function App() {
       setStudentDraft({ ...saved.student, testId: saved.result.testId || tests[0].id });
       setResult(saved.result);
       setStage("result");
+      setAnalysisIndex(0);
     }
 
     return () => {
@@ -906,6 +978,19 @@ export default function App() {
     submitTest("Submitted by student.");
   }
 
+  function openStudentAnalysis() {
+    setAnalysisIndex(0);
+    setStage("analysis");
+  }
+
+  function handleAnalysisPrevious() {
+    setAnalysisIndex((current) => Math.max(0, current - 1));
+  }
+
+  function handleAnalysisNext() {
+    setAnalysisIndex((current) => Math.min((result?.review.length || 1) - 1, current + 1));
+  }
+
   function handleAnswer(questionId, answer) {
     setAnswers((current) => {
       const nextAnswers = {
@@ -982,6 +1067,7 @@ export default function App() {
 
     setResult(nextResult);
     setStage("result");
+    setAnalysisIndex(0);
     setWarningMessage("");
     const nextLocalRecords = appendAnalyticsRecord(nextResult);
     setAnalyticsRecords(nextLocalRecords);
@@ -1017,6 +1103,7 @@ export default function App() {
     setSubmitChallengeError("");
     setAnswers({});
     setCurrentIndex(0);
+    setAnalysisIndex(0);
     setRemainingSeconds(findTestById(studentDraft.testId).durationMinutes * 60);
     setViolations(0);
     setWarningMessage("");
@@ -1067,7 +1154,20 @@ export default function App() {
   }
 
   if (stage === "result" && result) {
-    return <ResultScreen result={result} onRestart={restart} onOpenDashboard={requestTeacherDashboard} />;
+    return <ResultScreen result={result} onRestart={restart} onAnalyze={openStudentAnalysis} />;
+  }
+
+  if (stage === "analysis" && result) {
+    return (
+      <StudentAnalysisScreen
+        result={result}
+        currentIndex={analysisIndex}
+        onSelectQuestion={setAnalysisIndex}
+        onPrevious={handleAnalysisPrevious}
+        onNext={handleAnalysisNext}
+        onFinish={() => setStage("result")}
+      />
+    );
   }
 
   return (
