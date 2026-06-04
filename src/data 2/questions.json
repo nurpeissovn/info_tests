@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "question": "What is 5 + 7?",
+    "options": ["10", "11", "12", "13"],
+    "correctAnswer": "12",
+    "points": 1,
+    "subject": "Mathematics"
+  },
+  {
+    "id": 2,
+    "question": "Which planet is known as the Red Planet?",
+    "options": ["Venus", "Mars", "Jupiter", "Mercury"],
+    "correctAnswer": "Mars",
+    "points": 1,
+    "subject": "Science"
+  },
+  {
+    "id": 3,
+    "question": "Choose the correct past tense of 'go'.",
+    "options": ["Goed", "Went", "Gone", "Going"],
+    "correctAnswer": "Went",
+    "points": 1,
+    "subject": "English"
+  },
+  {
+    "id": 4,
+    "question": "What is the capital city of Kazakhstan?",
+    "options": ["Almaty", "Astana", "Shymkent", "Aktobe"],
+    "correctAnswer": "Astana",
+    "points": 1,
+    "subject": "Geography"
+  },
+  {
+    "id": 5,
+    "question": "Which of these is a renewable energy source?",
+    "options": ["Coal", "Oil", "Wind", "Gasoline"],
+    "correctAnswer": "Wind",
+    "points": 1,
+    "subject": "Environmental Studies"
+  }
+]

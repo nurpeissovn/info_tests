@@ -1,0 +1,47 @@
+[
+  {
+    "id": 1,
+    "question": "What is 5 + 7?",
+    "options": ["10", "11", "12", "13"],
+    "correctAnswer": "12",
+    "points": 1,
+    "subject": "Mathematics"
+  },
+  {
+    "id": 2,
+    "question": "Which of the following is a mammal?",
+    "options": ["Shark", "Dolphin", "Eagle", "Octopus"],
+    "correctAnswer": "Dolphin",
+    "points": 1,
+    "subject": "Science"
+  },
+  {
+    "id": 3,
+    "question": "Choose the correct synonym of 'rapid'.",
+    "options": ["Slow", "Fast", "Heavy", "Quiet"],
+    "correctAnswer": "Fast",
+    "points": 1,
+    "subject": "English"
+  },
+  {
+    "id": 4,
+    "question": "What is the capital of Kazakhstan?",
+    "options": ["Almaty", "Astana", "Taraz", "Atyrau"],
+    "correctAnswer": "Astana",
+    "points": 1,
+    "subject": "Geography"
+  },
+  {
+    "id": 5,
+    "question": "What does CPU stand for?",
+    "options": [
+      "Central Program Unit",
+      "Central Processing Unit",
+      "Control Power Unit",
+      "Computer Primary Unit"
+    ],
+    "correctAnswer": "Central Processing Unit",
+    "points": 1,
+    "subject": "Computer Science"
+  }
+]

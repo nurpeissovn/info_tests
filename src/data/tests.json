@@ -1,0 +1,273 @@
+[
+  {
+    "id": "test-1",
+    "title": "Test 1",
+    "description": "Informatics practice test with 26 written questions.",
+    "subject": "Informatics",
+    "durationMinutes": 45,
+    "passPercentage": 60,
+    "questions": [
+      {
+        "id": 1,
+        "question": "Орындалуы керек қадам белгілі бір шарттың орындалу немесе орындалмауына байланысты жүзеге асырылатын алгоритм",
+        "options": ["Сызықтық", "Тармақталған", "Циклдік", "Функциялық"],
+        "correctAnswer": "Тармақталған",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Алгоритмдер"
+      },
+      {
+        "id": 2,
+        "question": "Берілген кодтың нәтижесін табыңыз.",
+        "supportText": "a = True\nb = False\nc = True\nres = a or b and c\nprint('res')",
+        "options": ["True", "False", "res", "Қате шығарады"],
+        "correctAnswer": "res",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Python"
+      },
+      {
+        "id": 3,
+        "question": "Алдын ала жасалған файлды ашып, ондағы жазбалардың соңына жаңа деректерді қосып жазушы режим",
+        "options": ["'a'", "'w'", "'r'", "'t'"],
+        "correctAnswer": "'a'",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Файлдар"
+      },
+      {
+        "id": 4,
+        "question": "numbers.txt атты жаңа файл ашып, оған 1-ден 10-ға дейінгі сандарды жазушы кодты таңдаңыз.",
+        "options": [
+          "file = open('numbers.txt', 'w')\nfor i in range(1, 11):\n    file.write(i)",
+          "file = open('numbers.txt', 'w')\nfor i in range(1, 11):\n    file.write(str(i) + '\\n')",
+          "file = open('numbers.txt', 'a')\nfor i in range(1, 10):\n    file.write(str(i) + '\\n')",
+          "file = open('numbers.txt', 'r')\nfor i in range(1, 11):\n    file.write(str(i) + '\\n')"
+        ],
+        "correctAnswer": "file = open('numbers.txt', 'w')\nfor i in range(1, 11):\n    file.write(str(i) + '\\n')",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Файлдар"
+      },
+      {
+        "id": 5,
+        "question": "Екі құрылғыға кез-келген жерде, кез-келген уақытта ақпарат алмасуға мүмкіндік беретін байланыс стандарттары",
+        "options": ["Айпи адрестер", "Домендер", "VPN және PROXY", "Хаттама"],
+        "correctAnswer": "Хаттама",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Желілер"
+      },
+      {
+        "id": 6,
+        "question": "Берілген кодтың нәтижесін табыңыз.",
+        "supportText": "x = 10\ny = 20\nif x > y or y < 15:\n    if x < 5 and y > 10:\n        print('1')\n    else:\n        print('2')\nelse:\n    print('3')",
+        "options": ["1", "2", "3", "Қате шығады"],
+        "correctAnswer": "3",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Python"
+      },
+      {
+        "id": 7,
+        "question": "Жоғарыдағы ұяшық қалай форматталған?",
+        "supportImage": "/support/page_07_cell_crop.jpg",
+        "supportText": "Ұяшықта сары фондағы қызыл 'Goodbye' мәтіні берілген. Мәтін ортасына тураланған және 45 градус сағат тіліне қарсы бұрылған.",
+        "options": [
+          "Қаріп түсі сары, бояу түсі қызыл, түзелуі ортаға, 45 градус сағат тілімен бұрылған",
+          "Қаріп түсі қызыл, бояу түсі сары, түзелуі солға, 45 градус сағат тіліне қарсы бұрылған",
+          "Қаріп түсі қызыл, бояу түсі сары, түзелуі ортаға, 45 градус сағат тіліне қарсы бұрылған",
+          "Қаріп түсі қызыл, бояу түсі сары, түзелуі солға, 45 градус сағат тілімен бұрылған"
+        ],
+        "correctAnswer": "Қаріп түсі қызыл, бояу түсі сары, түзелуі ортаға, 45 градус сағат тіліне қарсы бұрылған",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Электрондық кесте"
+      },
+      {
+        "id": 8,
+        "question": "Мәтінді мөлдір емес етуге қажетті қасиет",
+        "options": ["opacity: 0;", "opacity: 1;", "opacity: 0.5;", "Дұрыс жауабы жоқ"],
+        "correctAnswer": "opacity: 1;",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "CSS"
+      },
+      {
+        "id": 9,
+        "question": "Дыбыстық фон енгізетін тег",
+        "options": [
+          "<audio src=\"sound1.mp3\">",
+          "<body background=\"fon4.jpg\">",
+          "<bgsound src=\"voice1.wav\">",
+          "<embed src=\"menin_elim.avi\">"
+        ],
+        "correctAnswer": "<bgsound src=\"voice1.wav\">",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "HTML"
+      },
+      {
+        "id": 10,
+        "question": "Берілген кодта x айнымалысына қай санды берген жағдайда жауап False болып қалады?",
+        "supportText": "ans = False\nx = int(input())\nif x % 2 != 0 and x > 10:\n    ans = True\nif x % 2 == 0 and x % 7 != 0 and x <= 100:\n    ans = True\nprint(ans)",
+        "options": ["21", "15", "72", "5"],
+        "correctAnswer": "5",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Python"
+      },
+      {
+        "id": 11,
+        "question": "Циклді тоқтатушы оператор",
+        "options": ["exit", "return", "continue", "break"],
+        "correctAnswer": "break",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Python"
+      },
+      {
+        "id": 12,
+        "question": "Берілген код бөлігінің нәтижесі.",
+        "supportText": "x = \"JUZ4O_UBT\"\nprint(x[::-1])",
+        "options": ["\"JUZ4O_UBT\"", "\"UBT_JUZ4O\"", "\"O4ZUJ_TBU\"", "\"TBU_O4ZUJ\""],
+        "correctAnswer": "\"TBU_O4ZUJ\"",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Python"
+      },
+      {
+        "id": 13,
+        "question": "Файлдардағы жолдарды жеке-жеке оқу үшін қай функция қолданылады?",
+        "options": ["open()", "read()", "readline()", "seek()"],
+        "correctAnswer": "readline()",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Файлдар"
+      },
+      {
+        "id": 14,
+        "question": "Класстың дұрыс таңдалуын көрсетіңіз.",
+        "options": [".button {}", "#button {}", "button {}", "Дұрыс жауабы жоқ"],
+        "correctAnswer": ".button {}",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "CSS"
+      },
+      {
+        "id": 15,
+        "question": "3,2 Тб ақпаратты Мб-пен өрнектеңіз.",
+        "options": ["3276,8 Мб", "3,43 * 10^9 Мб", "3 355 443 Мб", "0,003125 Мб"],
+        "correctAnswer": "3 355 443 Мб",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Өлшем бірліктері"
+      },
+      {
+        "id": 16,
+        "question": "Екіөлшемді массивтегі бас диагональдың жоғарғы бөлігі",
+        "options": ["i < j", "j > i", "i + j > n + 1", "i + j < n + 1"],
+        "correctAnswer": "i < j",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Массивтер"
+      },
+      {
+        "id": 17,
+        "question": "Кез-келген банк желісі қандай желіге жатады?",
+        "options": ["Ведомстволық", "Мемлекеттік", "Әскери", "Жеке"],
+        "correctAnswer": "Ведомстволық",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Желілер"
+      },
+      {
+        "id": 18,
+        "question": "Коды не кірістіруге мүмкіндік береді?",
+        "supportImage": "/support/page_18_image_1_crop.jpg",
+        "supportText": "<p align=\"center\">\n  <embed\n    autostart=True\n    repeat=True\n    play_loop=5\n    quality\n    src=\"Modern Talking - ... .mp4\"\n    height=\"350\"\n    width=\"200\">\n  </embed>\n</p>",
+        "options": ["web бетке бейнеролик", "web беттің фонына фотосурет", "web бетке мәтін", "web бетке фотосурет"],
+        "correctAnswer": "web бетке бейнеролик",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "HTML"
+      },
+      {
+        "id": 19,
+        "question": "C3 ұяшығындағы формуланы E5 ұяшығына көшірсе, формуланың нәтижесін табыңыз.",
+        "supportImage": "/support/page_19_image_1_crop.jpg",
+        "supportText": "Кестеде C3 ұяшығында =$B4*D$6 формуласы берілген. Мәндер: B6 = 7, F4 = 3, D6 = 11, D8 = 8. Формуланы E5 ұяшығына көшіргенде салыстырмалы және абсолют сілтемелерді ескеріп, нәтижені табыңыз.",
+        "options": ["21", "28", "48", "18"],
+        "correctAnswer": "28",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Электрондық кесте"
+      },
+      {
+        "id": 20,
+        "question": "Блоктың артқы жағына сурет қосуға қажетті CSS қасиет",
+        "options": ["color", "border", "background-image", "image"],
+        "correctAnswer": "background-image",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "CSS"
+      },
+      {
+        "id": 21,
+        "question": "CSS тілінде мәтіннің астын сызуға қажетті қасиет",
+        "options": ["font-family", "text-decoration", "font-size", "font-weight"],
+        "correctAnswer": "text-decoration",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "CSS"
+      },
+      {
+        "id": 22,
+        "question": "10E16 − 328 + 00110112 өрнегінің мәнін анықтаңыз.",
+        "options": ["28010", "31210", "27110", "41310"],
+        "correctAnswer": "27110",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Санау жүйелері"
+      },
+      {
+        "id": 23,
+        "question": "Ұлттық қауіпсіздік комитетінің желісі қандай желіге жатады?",
+        "options": ["Ведомстволық", "Мемлекеттік", "Әскери", "Жеке"],
+        "correctAnswer": "Мемлекеттік",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Желілер"
+      },
+      {
+        "id": 24,
+        "question": "Жоғары жылдамдықтағы желінің жылдамдығы",
+        "options": ["10 Мбит/с", "100 Мбит/с", "1 Гбит/с", "10 Гбит/с"],
+        "correctAnswer": "100 Мбит/с",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Желілер"
+      },
+      {
+        "id": 25,
+        "question": "Мадданың дискінің сыйымдылығы 8 Гб құрайды. Кітапта 600 бет, әр бетте 80 жол, әр жолда 30 символ бар. Мадданың дискісіне осындай кітаптың нешеуін сыйдыруға болады?",
+        "options": ["6227", "8245", "5965", "6325"],
+        "correctAnswer": "5965",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Өлшем бірліктері"
+      },
+      {
+        "id": 26,
+        "question": "Ең үлкен үшбұрыш ауданын табу формуласы",
+        "supportImage": "/support/page_26_image_1_crop.jpg",
+        "supportText": "Excel кестесінде үшбұрыштардың аудандары F3:F12 аралығында берілген. Сол диапазондағы ең үлкен ауданды табатын формуланы таңдаңыз.",
+        "options": ["=МАКСИМУМ(F3;F12)", "=МАКС(F3:F12)", "=МАКС(F3;F12)", "=МАКС(F3,F12)"],
+        "correctAnswer": "=МАКС(F3:F12)",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Электрондық кесте"
+      }
+    ]
+  }
+]
