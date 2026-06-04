@@ -111,7 +111,7 @@ app.post("/api/results", async (request, response) => {
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(distDir));
 
-  app.get("*", (_request, response) => {
+  app.get(/.*/, (_request, response) => {
     response.sendFile(path.join(distDir, "index.html"));
   });
 }
