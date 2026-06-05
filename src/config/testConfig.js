@@ -1,5 +1,5 @@
 export const TEST_CONFIG = {
-  durationMinutes: 20,
+  durationMinutes: 60,
   maxViolations: 3,
   passPercentage: 60,
   showAnswerReview: true,

@@ -34,6 +34,10 @@ function createSubmitChallenge() {
   };
 }
 
+function createScoreUnlockCode() {
+  return String(Math.floor(Math.random() * 9000) + 1000);
+}
+
 function attemptFullscreen() {
   const element = document.documentElement;
 
@@ -657,6 +661,51 @@ function ScoreRevealScreen({ result, onRestart, onAnalyzeAgain }) {
   );
 }
 
+function ScoreUnlockScreen({ code, input, error, onInputChange, onSubmit, onBackToAnalyze }) {
+  return (
+    <main className="page-shell">
+      <section className="score-unlock" aria-labelledby="score-unlock-title">
+        <div className="score-unlock__panel">
+          <div className="score-unlock__teacher">
+            <span className="score-unlock__label">Teacher Code</span>
+            <strong>{code}</strong>
+          </div>
+
+          <div className="score-unlock__content">
+            <span className="eyebrow">Final Confirmation</span>
+            <h1 id="score-unlock-title">Enter the teacher code</h1>
+            <p>Results open only after the class analysis is finished.</p>
+
+            <form className="score-unlock__form" onSubmit={onSubmit}>
+              <label className="field">
+                <span>Confirmation Code</span>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  value={input}
+                  onChange={(event) => onInputChange(event.target.value.replace(/\D/g, "").slice(0, 4))}
+                  placeholder="4-digit code"
+                  autoFocus
+                />
+              </label>
+              {error ? <p className="form-error">{error}</p> : null}
+
+              <div className="button-row score-unlock__actions">
+                <button className="primary-button primary-button--centered" type="submit">
+                  Show Results
+                </button>
+                <button className="secondary-button primary-button--centered" type="button" onClick={onBackToAnalyze}>
+                  Back To Analyze
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+    </main>
+  );
+}
+
 export default function App() {
   const [studentDraft, setStudentDraft] = useState({ name: "", surname: "", testId: tests[0].id });
   const [student, setStudent] = useState(null);
@@ -679,6 +728,9 @@ export default function App() {
   const [submitChallengeAnswer, setSubmitChallengeAnswer] = useState("");
   const [submitChallengeError, setSubmitChallengeError] = useState("");
   const [showSubmitConfirmationModal, setShowSubmitConfirmationModal] = useState(false);
+  const [scoreUnlockCode, setScoreUnlockCode] = useState(createScoreUnlockCode);
+  const [scoreUnlockInput, setScoreUnlockInput] = useState("");
+  const [scoreUnlockError, setScoreUnlockError] = useState("");
   const [analyticsSource, setAnalyticsSource] = useState("local");
   const [apiStatusMessage, setApiStatusMessage] = useState("");
   const sessionRef = useRef(null);
@@ -1042,6 +1094,25 @@ export default function App() {
     setStage("analysis");
   }
 
+  function requestScoreUnlock() {
+    setScoreUnlockCode(createScoreUnlockCode());
+    setScoreUnlockInput("");
+    setScoreUnlockError("");
+    setStage("scoreGate");
+  }
+
+  function confirmScoreUnlock(event) {
+    event.preventDefault();
+
+    if (scoreUnlockInput !== scoreUnlockCode) {
+      setScoreUnlockError("Incorrect code. Ask the teacher for the confirmation code.");
+      return;
+    }
+
+    setScoreUnlockError("");
+    setStage("score");
+  }
+
   function handleAnalysisPrevious() {
     setAnalysisIndex((current) => Math.max(0, current - 1));
   }
@@ -1160,6 +1231,8 @@ export default function App() {
     setShowSubmitConfirmationModal(false);
     setSubmitChallengeAnswer("");
     setSubmitChallengeError("");
+    setScoreUnlockInput("");
+    setScoreUnlockError("");
     setAnswers({});
     setCurrentIndex(0);
     setAnalysisIndex(0);
@@ -1224,7 +1297,20 @@ export default function App() {
         onSelectQuestion={setAnalysisIndex}
         onPrevious={handleAnalysisPrevious}
         onNext={handleAnalysisNext}
-        onFinish={() => setStage("score")}
+        onFinish={requestScoreUnlock}
+      />
+    );
+  }
+
+  if (stage === "scoreGate" && result) {
+    return (
+      <ScoreUnlockScreen
+        code={scoreUnlockCode}
+        input={scoreUnlockInput}
+        error={scoreUnlockError}
+        onInputChange={setScoreUnlockInput}
+        onSubmit={confirmScoreUnlock}
+        onBackToAnalyze={openStudentAnalysis}
       />
     );
   }

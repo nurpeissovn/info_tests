@@ -4,13 +4,18 @@
     "title": "Test 1",
     "description": "Informatics practice test with 26 written questions.",
     "subject": "Informatics",
-    "durationMinutes": 45,
+    "durationMinutes": 60,
     "passPercentage": 60,
     "questions": [
       {
         "id": 1,
         "question": "Орындалуы керек қадам белгілі бір шарттың орындалу немесе орындалмауына байланысты жүзеге асырылатын алгоритм",
-        "options": ["Сызықтық", "Тармақталған", "Циклдік", "Функциялық"],
+        "options": [
+          "Сызықтық",
+          "Тармақталған",
+          "Циклдік",
+          "Функциялық"
+        ],
         "correctAnswer": "Тармақталған",
         "points": 1,
         "subject": "Informatics",
@@ -20,7 +25,12 @@
         "id": 2,
         "question": "Берілген кодтың нәтижесін табыңыз.",
         "supportText": "a = True\nb = False\nc = True\nres = a or b and c\nprint('res')",
-        "options": ["True", "False", "res", "Қате шығарады"],
+        "options": [
+          "True",
+          "False",
+          "res",
+          "Қате шығарады"
+        ],
         "correctAnswer": "res",
         "points": 1,
         "subject": "Informatics",
@@ -29,7 +39,12 @@
       {
         "id": 3,
         "question": "Алдын ала жасалған файлды ашып, ондағы жазбалардың соңына жаңа деректерді қосып жазушы режим",
-        "options": ["'a'", "'w'", "'r'", "'t'"],
+        "options": [
+          "'a'",
+          "'w'",
+          "'r'",
+          "'t'"
+        ],
         "correctAnswer": "'a'",
         "points": 1,
         "subject": "Informatics",
@@ -52,7 +67,12 @@
       {
         "id": 5,
         "question": "Екі құрылғыға кез-келген жерде, кез-келген уақытта ақпарат алмасуға мүмкіндік беретін байланыс стандарттары",
-        "options": ["Айпи адрестер", "Домендер", "VPN және PROXY", "Хаттама"],
+        "options": [
+          "Айпи адрестер",
+          "Домендер",
+          "VPN және PROXY",
+          "Хаттама"
+        ],
         "correctAnswer": "Хаттама",
         "points": 1,
         "subject": "Informatics",
@@ -62,7 +82,12 @@
         "id": 6,
         "question": "Берілген кодтың нәтижесін табыңыз.",
         "supportText": "x = 10\ny = 20\nif x > y or y < 15:\n    if x < 5 and y > 10:\n        print('1')\n    else:\n        print('2')\nelse:\n    print('3')",
-        "options": ["1", "2", "3", "Қате шығады"],
+        "options": [
+          "1",
+          "2",
+          "3",
+          "Қате шығады"
+        ],
         "correctAnswer": "3",
         "points": 1,
         "subject": "Informatics",
@@ -87,7 +112,12 @@
       {
         "id": 8,
         "question": "Мәтінді мөлдір емес етуге қажетті қасиет",
-        "options": ["opacity: 0;", "opacity: 1;", "opacity: 0.5;", "Дұрыс жауабы жоқ"],
+        "options": [
+          "opacity: 0;",
+          "opacity: 1;",
+          "opacity: 0.5;",
+          "Дұрыс жауабы жоқ"
+        ],
         "correctAnswer": "opacity: 1;",
         "points": 1,
         "subject": "Informatics",
@@ -111,7 +141,12 @@
         "id": 10,
         "question": "Берілген кодта x айнымалысына қай санды берген жағдайда жауап False болып қалады?",
         "supportText": "ans = False\nx = int(input())\nif x % 2 != 0 and x > 10:\n    ans = True\nif x % 2 == 0 and x % 7 != 0 and x <= 100:\n    ans = True\nprint(ans)",
-        "options": ["21", "15", "72", "5"],
+        "options": [
+          "21",
+          "15",
+          "72",
+          "5"
+        ],
         "correctAnswer": "5",
         "points": 1,
         "subject": "Informatics",
@@ -120,7 +155,12 @@
       {
         "id": 11,
         "question": "Циклді тоқтатушы оператор",
-        "options": ["exit", "return", "continue", "break"],
+        "options": [
+          "exit",
+          "return",
+          "continue",
+          "break"
+        ],
         "correctAnswer": "break",
         "points": 1,
         "subject": "Informatics",
@@ -130,7 +170,12 @@
         "id": 12,
         "question": "Берілген код бөлігінің нәтижесі.",
         "supportText": "x = \"JUZ4O_UBT\"\nprint(x[::-1])",
-        "options": ["\"JUZ4O_UBT\"", "\"UBT_JUZ4O\"", "\"O4ZUJ_TBU\"", "\"TBU_O4ZUJ\""],
+        "options": [
+          "\"JUZ4O_UBT\"",
+          "\"UBT_JUZ4O\"",
+          "\"O4ZUJ_TBU\"",
+          "\"TBU_O4ZUJ\""
+        ],
         "correctAnswer": "\"TBU_O4ZUJ\"",
         "points": 1,
         "subject": "Informatics",
@@ -139,7 +184,12 @@
       {
         "id": 13,
         "question": "Файлдардағы жолдарды жеке-жеке оқу үшін қай функция қолданылады?",
-        "options": ["open()", "read()", "readline()", "seek()"],
+        "options": [
+          "open()",
+          "read()",
+          "readline()",
+          "seek()"
+        ],
         "correctAnswer": "readline()",
         "points": 1,
         "subject": "Informatics",
@@ -148,7 +198,12 @@
       {
         "id": 14,
         "question": "Класстың дұрыс таңдалуын көрсетіңіз.",
-        "options": [".button {}", "#button {}", "button {}", "Дұрыс жауабы жоқ"],
+        "options": [
+          ".button {}",
+          "#button {}",
+          "button {}",
+          "Дұрыс жауабы жоқ"
+        ],
         "correctAnswer": ".button {}",
         "points": 1,
         "subject": "Informatics",
@@ -157,7 +212,12 @@
       {
         "id": 15,
         "question": "3,2 Тб ақпаратты Мб-пен өрнектеңіз.",
-        "options": ["3276,8 Мб", "3,43 * 10^9 Мб", "3 355 443 Мб", "0,003125 Мб"],
+        "options": [
+          "3276,8 Мб",
+          "3,43 * 10^9 Мб",
+          "3 355 443 Мб",
+          "0,003125 Мб"
+        ],
         "correctAnswer": "3 355 443 Мб",
         "points": 1,
         "subject": "Informatics",
@@ -166,7 +226,12 @@
       {
         "id": 16,
         "question": "Екіөлшемді массивтегі бас диагональдың жоғарғы бөлігі",
-        "options": ["i < j", "j > i", "i + j > n + 1", "i + j < n + 1"],
+        "options": [
+          "i < j",
+          "j > i",
+          "i + j > n + 1",
+          "i + j < n + 1"
+        ],
         "correctAnswer": "i < j",
         "points": 1,
         "subject": "Informatics",
@@ -175,7 +240,12 @@
       {
         "id": 17,
         "question": "Кез-келген банк желісі қандай желіге жатады?",
-        "options": ["Ведомстволық", "Мемлекеттік", "Әскери", "Жеке"],
+        "options": [
+          "Ведомстволық",
+          "Мемлекеттік",
+          "Әскери",
+          "Жеке"
+        ],
         "correctAnswer": "Ведомстволық",
         "points": 1,
         "subject": "Informatics",
@@ -186,7 +256,12 @@
         "question": "Коды не кірістіруге мүмкіндік береді?",
         "supportImage": "/support/page_18_image_1_crop.jpg",
         "supportText": "<p align=\"center\">\n  <embed\n    autostart=True\n    repeat=True\n    play_loop=5\n    quality\n    src=\"Modern Talking - ... .mp4\"\n    height=\"350\"\n    width=\"200\">\n  </embed>\n</p>",
-        "options": ["web бетке бейнеролик", "web беттің фонына фотосурет", "web бетке мәтін", "web бетке фотосурет"],
+        "options": [
+          "web бетке бейнеролик",
+          "web беттің фонына фотосурет",
+          "web бетке мәтін",
+          "web бетке фотосурет"
+        ],
         "correctAnswer": "web бетке бейнеролик",
         "points": 1,
         "subject": "Informatics",
@@ -197,7 +272,12 @@
         "question": "C3 ұяшығындағы формуланы E5 ұяшығына көшірсе, формуланың нәтижесін табыңыз.",
         "supportImage": "/support/page_19_image_1_crop.jpg",
         "supportText": "Кестеде C3 ұяшығында =$B4*D$6 формуласы берілген. Мәндер: B6 = 7, F4 = 3, D6 = 11, D8 = 8. Формуланы E5 ұяшығына көшіргенде салыстырмалы және абсолют сілтемелерді ескеріп, нәтижені табыңыз.",
-        "options": ["21", "28", "48", "18"],
+        "options": [
+          "21",
+          "28",
+          "48",
+          "18"
+        ],
         "correctAnswer": "28",
         "points": 1,
         "subject": "Informatics",
@@ -206,7 +286,12 @@
       {
         "id": 20,
         "question": "Блоктың артқы жағына сурет қосуға қажетті CSS қасиет",
-        "options": ["color", "border", "background-image", "image"],
+        "options": [
+          "color",
+          "border",
+          "background-image",
+          "image"
+        ],
         "correctAnswer": "background-image",
         "points": 1,
         "subject": "Informatics",
@@ -215,7 +300,12 @@
       {
         "id": 21,
         "question": "CSS тілінде мәтіннің астын сызуға қажетті қасиет",
-        "options": ["font-family", "text-decoration", "font-size", "font-weight"],
+        "options": [
+          "font-family",
+          "text-decoration",
+          "font-size",
+          "font-weight"
+        ],
         "correctAnswer": "text-decoration",
         "points": 1,
         "subject": "Informatics",
@@ -224,7 +314,12 @@
       {
         "id": 22,
         "question": "10E16 − 328 + 00110112 өрнегінің мәнін анықтаңыз.",
-        "options": ["28010", "31210", "27110", "41310"],
+        "options": [
+          "28010",
+          "31210",
+          "27110",
+          "41310"
+        ],
         "correctAnswer": "27110",
         "points": 1,
         "subject": "Informatics",
@@ -233,7 +328,12 @@
       {
         "id": 23,
         "question": "Ұлттық қауіпсіздік комитетінің желісі қандай желіге жатады?",
-        "options": ["Ведомстволық", "Мемлекеттік", "Әскери", "Жеке"],
+        "options": [
+          "Ведомстволық",
+          "Мемлекеттік",
+          "Әскери",
+          "Жеке"
+        ],
         "correctAnswer": "Мемлекеттік",
         "points": 1,
         "subject": "Informatics",
@@ -242,7 +342,12 @@
       {
         "id": 24,
         "question": "Жоғары жылдамдықтағы желінің жылдамдығы",
-        "options": ["10 Мбит/с", "100 Мбит/с", "1 Гбит/с", "10 Гбит/с"],
+        "options": [
+          "10 Мбит/с",
+          "100 Мбит/с",
+          "1 Гбит/с",
+          "10 Гбит/с"
+        ],
         "correctAnswer": "100 Мбит/с",
         "points": 1,
         "subject": "Informatics",
@@ -251,7 +356,12 @@
       {
         "id": 25,
         "question": "Мадданың дискінің сыйымдылығы 8 Гб құрайды. Кітапта 600 бет, әр бетте 80 жол, әр жолда 30 символ бар. Мадданың дискісіне осындай кітаптың нешеуін сыйдыруға болады?",
-        "options": ["6227", "8245", "5965", "6325"],
+        "options": [
+          "6227",
+          "8245",
+          "5965",
+          "6325"
+        ],
         "correctAnswer": "5965",
         "points": 1,
         "subject": "Informatics",
@@ -262,11 +372,597 @@
         "question": "Ең үлкен үшбұрыш ауданын табу формуласы",
         "supportImage": "/support/page_26_image_1_crop.jpg",
         "supportText": "Excel кестесінде үшбұрыштардың аудандары F3:F12 аралығында берілген. Сол диапазондағы ең үлкен ауданды табатын формуланы таңдаңыз.",
-        "options": ["=МАКСИМУМ(F3;F12)", "=МАКС(F3:F12)", "=МАКС(F3;F12)", "=МАКС(F3,F12)"],
+        "options": [
+          "=МАКСИМУМ(F3;F12)",
+          "=МАКС(F3:F12)",
+          "=МАКС(F3;F12)",
+          "=МАКС(F3,F12)"
+        ],
         "correctAnswer": "=МАКС(F3:F12)",
         "points": 1,
         "subject": "Informatics",
         "topic": "Электрондық кесте"
+      }
+    ]
+  },
+  {
+    "id": "test-2",
+    "title": "Test 2",
+    "description": "HTML, CSS and web technology practice test.",
+    "subject": "Web Technologies",
+    "durationMinutes": 60,
+    "passPercentage": 60,
+    "questions": [
+      {
+        "id": 1,
+        "question": "HTML құжаттарының кеңейтілімі",
+        "options": [
+          ".file, .html",
+          ".html, .htm",
+          ".css, .js",
+          ".html, .css"
+        ],
+        "correctAnswer": ".html, .htm",
+        "points": 1,
+        "subject": "Web Technologies",
+        "topic": "HTML"
+      },
+      {
+        "id": 2,
+        "question": "Браузерге HTML құжаты екендігін хабарлайтын тег",
+        "options": [
+          "head",
+          "body",
+          "html",
+          "title"
+        ],
+        "correctAnswer": "html",
+        "points": 1,
+        "subject": "Web Technologies",
+        "topic": "HTML"
+      },
+      {
+        "id": 3,
+        "question": "Көлденең сызық сызушы тег",
+        "options": [
+          "br",
+          "dl",
+          "hr",
+          "p"
+        ],
+        "correctAnswer": "hr",
+        "points": 1,
+        "subject": "Web Technologies",
+        "topic": "HTML"
+      },
+      {
+        "id": 4,
+        "question": "Нөмірленген және маркерленген тізім тегтері",
+        "options": [
+          "ol, ul",
+          "dl, dt",
+          "sub, sup",
+          "strong, b"
+        ],
+        "correctAnswer": "ol, ul",
+        "points": 1,
+        "subject": "Web Technologies",
+        "topic": "HTML"
+      },
+      {
+        "id": 5,
+        "question": "Мәтін курсивпен жазылады",
+        "options": [
+          "s, del",
+          "u, ins",
+          "i, em",
+          "b, strong"
+        ],
+        "correctAnswer": "i, em",
+        "points": 1,
+        "subject": "Web Technologies",
+        "topic": "HTML"
+      },
+      {
+        "id": 6,
+        "question": "Мәтін қарпінің түсін, өлшемі мен түрін өзгертуге мүмкіндік береді",
+        "options": [
+          "color",
+          "font",
+          "face",
+          "bgcolor"
+        ],
+        "correctAnswer": "font",
+        "points": 1,
+        "subject": "Web Technologies",
+        "topic": "HTML"
+      },
+      {
+        "id": 7,
+        "question": "Құжат денесіне графикалық сурет орнату үшін пайдаланылады",
+        "options": [
+          "video",
+          "audio",
+          "img",
+          "alt"
+        ],
+        "correctAnswer": "img",
+        "points": 1,
+        "subject": "Web Technologies",
+        "topic": "HTML"
+      },
+      {
+        "id": 8,
+        "question": "Сілтеме енгізу үшін қолданылатын тег",
+        "options": [
+          "link",
+          "alink",
+          "a",
+          "vlink"
+        ],
+        "correctAnswer": "a",
+        "points": 1,
+        "subject": "Web Technologies",
+        "topic": "HTML"
+      },
+      {
+        "id": 9,
+        "question": "<hr align = \"right\"> атрибут атауы",
+        "options": [
+          "hr",
+          "align",
+          "right",
+          "<>"
+        ],
+        "correctAnswer": "align",
+        "points": 1,
+        "subject": "Web Technologies",
+        "topic": "HTML"
+      },
+      {
+        "id": 10,
+        "question": "Құжаттың ең үлкен тақырыбы",
+        "options": [
+          "h2",
+          "h1",
+          "h4",
+          "h6"
+        ],
+        "correctAnswer": "h1",
+        "points": 1,
+        "subject": "Web Technologies",
+        "topic": "HTML"
+      },
+      {
+        "id": 11,
+        "question": "Абзац экранның ені бойынша тураланады",
+        "options": [
+          "<p align = \"left\">",
+          "<p align = \"right\">",
+          "<p align = \"justify\">",
+          "<p align = \"center\">"
+        ],
+        "correctAnswer": "<p align = \"justify\">",
+        "points": 1,
+        "subject": "Web Technologies",
+        "topic": "HTML"
+      },
+      {
+        "id": 12,
+        "question": "Параграф және градус белгісі",
+        "options": [
+          "&para, &deg",
+          "&quot, nbsp",
+          "&deg, &quot",
+          "&nbsp, &sect"
+        ],
+        "correctAnswer": "&para, &deg",
+        "points": 1,
+        "subject": "Web Technologies",
+        "topic": "HTML entities"
+      },
+      {
+        "id": 13,
+        "question": "Жүгіртпе жол құрушы тег",
+        "options": [
+          "marquee",
+          "table",
+          "bgcolor",
+          "li"
+        ],
+        "correctAnswer": "marquee",
+        "points": 1,
+        "subject": "Web Technologies",
+        "topic": "HTML"
+      },
+      {
+        "id": 14,
+        "question": "Flash анимациясын кірістіру үшін қолданылатын тег",
+        "options": [
+          "object",
+          "flash",
+          "animation",
+          "video"
+        ],
+        "correctAnswer": "object",
+        "points": 1,
+        "subject": "Web Technologies",
+        "topic": "HTML"
+      },
+      {
+        "id": 15,
+        "question": "Тізімін құрастыру үшін қолданылған тег",
+        "supportImage": "/support/test2_q15_city_list.png",
+        "options": [
+          "<ol type = \"A\"></ol>",
+          "<ol type = \"a\"></ol>",
+          "<ol type = \"i\"></ol>",
+          "<ol type = \"I\"></ol>"
+        ],
+        "correctAnswer": "<ol type = \"I\"></ol>",
+        "points": 1,
+        "subject": "Web Technologies",
+        "topic": "HTML"
+      },
+      {
+        "id": 16,
+        "question": "Тізімін құрастыру үшін қолданылған тег",
+        "supportImage": "/support/test2_q16_square_list.png",
+        "options": [
+          "<ul type = \"square\"></ul>",
+          "<ul type = \"circle\"></ul>",
+          "<ol type = \"disk\"></ul>",
+          "<ul type = \"disk\"></ul>"
+        ],
+        "correctAnswer": "<ul type = \"square\"></ul>",
+        "points": 1,
+        "subject": "Web Technologies",
+        "topic": "HTML"
+      },
+      {
+        "id": 17,
+        "question": "frameset тегінің атрибуттары",
+        "options": [
+          "cols, rows",
+          "href, loop",
+          "controls, muted",
+          "bgcolor, link"
+        ],
+        "correctAnswer": "cols, rows",
+        "points": 1,
+        "subject": "Web Technologies",
+        "topic": "HTML"
+      },
+      {
+        "id": 18,
+        "question": "<img src = \"myphoto/photo.jpg\"> - сурет орналасқан орын",
+        "options": [
+          "HTML құжаттан бір деңгей төменде",
+          "HTML құжаттан бір деңгей жоғарыда",
+          "HTML құжатпен бір бумада",
+          "Фотосурет Интернет ресурста"
+        ],
+        "correctAnswer": "HTML құжаттан бір деңгей төменде",
+        "points": 1,
+        "subject": "Web Technologies",
+        "topic": "HTML"
+      },
+      {
+        "id": 19,
+        "question": "<a href = \"http://www.cprm-game.kz/beginner.html\"> - сілтеме түрі",
+        "options": [
+          "Бетке сілтеме",
+          "Файлға сілтеме",
+          "Сайтқа сілтеме",
+          "Суретке сілтеме"
+        ],
+        "correctAnswer": "Сайтқа сілтеме",
+        "points": 1,
+        "subject": "Web Technologies",
+        "topic": "HTML"
+      },
+      {
+        "id": 20,
+        "question": "Медиафайлды ойнату кезінде дыбысты өшіреді",
+        "options": [
+          "autoplay",
+          "loop",
+          "controls",
+          "muted"
+        ],
+        "correctAnswer": "muted",
+        "points": 1,
+        "subject": "Web Technologies",
+        "topic": "HTML"
+      },
+      {
+        "id": 21,
+        "question": "Берілген формадағы төртінші элементті анықтаңыз",
+        "supportImage": "/support/test2_q21_form_elements.png",
+        "options": [
+          "reset",
+          "submit",
+          "checkbox",
+          "radio"
+        ],
+        "correctAnswer": "reset",
+        "points": 1,
+        "subject": "Web Technologies",
+        "topic": "HTML forms"
+      },
+      {
+        "id": 22,
+        "question": "Сырғымалы жолдың атрибуттарына жатпайтын нұсқаны анықтаңыз",
+        "options": [
+          "direction",
+          "scrollamount",
+          "scrollspeed",
+          "scrolldelay"
+        ],
+        "correctAnswer": "scrollspeed",
+        "points": 1,
+        "subject": "Web Technologies",
+        "topic": "HTML"
+      },
+      {
+        "id": 23,
+        "question": "Берілген парақшада қандай тег қолданылмаған",
+        "supportImage": "/support/test2_q23_page_tags.png",
+        "options": [
+          "sup",
+          "ul",
+          "sub",
+          "ins"
+        ],
+        "correctAnswer": "ul",
+        "points": 1,
+        "subject": "Web Technologies",
+        "topic": "HTML"
+      },
+      {
+        "id": 24,
+        "question": "<audio src=\"my_files/general/audio/shot.mp3\" controls loop=\"3\"></audio> элементі веб-парақшада берілген. Аудио файлдың түбірлік бумасын анықтаңыз",
+        "options": [
+          "my_files",
+          "general",
+          "audio",
+          "shot"
+        ],
+        "correctAnswer": "my_files",
+        "points": 1,
+        "subject": "Web Technologies",
+        "topic": "HTML"
+      },
+      {
+        "id": 25,
+        "question": "Сілтеменің қалай ашылатындығын анықтауға қажетті атрибут",
+        "options": [
+          "a",
+          "title",
+          "target",
+          "href"
+        ],
+        "correctAnswer": "target",
+        "points": 1,
+        "subject": "Web Technologies",
+        "topic": "HTML"
+      },
+      {
+        "id": 26,
+        "question": "Жұпты тегті анықтаңыз",
+        "options": [
+          "hr",
+          "br",
+          "pre",
+          "input"
+        ],
+        "correctAnswer": "pre",
+        "points": 1,
+        "subject": "Web Technologies",
+        "topic": "HTML"
+      },
+      {
+        "id": 27,
+        "question": "<!DOCTYPE HTML> тегінің мақсаты",
+        "options": [
+          "Веб-парақшаның қауіпсіздік протоколдарын күшейту",
+          "Веб-парақшаның барлық құрылғыларда дұрыс көрсетілуін қамтамасыз ету",
+          "Веб-парақшаның HTML5 түпнұсқасын пайдаланатынын көрсету",
+          "Веб-парақшаны терезелік режимде ашады"
+        ],
+        "correctAnswer": "Веб-парақшаның HTML5 түпнұсқасын пайдаланатынын көрсету",
+        "points": 1,
+        "subject": "Web Technologies",
+        "topic": "HTML"
+      },
+      {
+        "id": 28,
+        "question": "Қосарланып қолданылатын rb+ режимінің қызметі",
+        "options": [
+          "Тек қана оқу",
+          "Файлдың ішіне жазылған деректі өзгерту және жаңа ақпарат қосу",
+          "Файлды бинарлық режимде ашу",
+          "Жаңа файл жасап оған деректі жазады"
+        ],
+        "correctAnswer": "Файлдың ішіне жазылған деректі өзгерту және жаңа ақпарат қосу",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Python файлдар"
+      },
+      {
+        "id": 29,
+        "question": "Көлемі үлкен файлдардың мазмұнын жол бойынша оқу үшін қолданылады.",
+        "options": [
+          "readline()",
+          "read()",
+          "readlines()",
+          "r+"
+        ],
+        "correctAnswer": "readline()",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Python файлдар"
+      },
+      {
+        "id": 30,
+        "question": "Программа жазуда 3 түрлі қате кетуі мүмкін, артығын белгілеңіз",
+        "options": [
+          "Синтаксистік",
+          "Программаның орындалу уақытына байланысты",
+          "Алгоритмдік қателер",
+          "Базалық қателер"
+        ],
+        "correctAnswer": "Базалық қателер",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Python қателер"
+      },
+      {
+        "id": 31,
+        "question": "Программа нәтижесі:",
+        "options": [
+          "0 2 4 6 8",
+          "2 4 6 8",
+          "1 3 5 7 9",
+          "2 4 6 8 10"
+        ],
+        "correctAnswer": "1 3 5 7 9",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Python циклдер",
+        "supportText": "i = 0\nwhile i < 10:\n    i += 1\n    if i % 2 == 0:\n        continue\n    print(i)"
+      },
+      {
+        "id": 32,
+        "question": "Берілген программа кодында жіберілген қате қандай?",
+        "supportText": "for 2a in range(2, 8, 2):\n    print('цикл денесі')",
+        "options": [
+          "алгоритмдік қате",
+          "орындау қатесі",
+          "программалық қате",
+          "синтаксистік қате"
+        ],
+        "correctAnswer": "синтаксистік қате",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Python қателер"
+      },
+      {
+        "id": 33,
+        "question": "Программа фрагментінің нәтижесі қандай?",
+        "supportText": "i = sum = 0\nwhile i <= 4:\n    sum += i\n    i = i + 1\nprint(sum)",
+        "options": [
+          "5",
+          "9",
+          "10",
+          "7"
+        ],
+        "correctAnswer": "10",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Python циклдер"
+      },
+      {
+        "id": 34,
+        "question": "Берілген программа фрагментінде цикл неше рет қайталанады және нәтижесі қандай?",
+        "supportText": "k = 0\nfor i in range(1, k + 3):\n    k = k + i\nprint(k)",
+        "options": [
+          "5 рет қайталанады, нәтижесі 15",
+          "2 рет қайталанады, нәтижесі 3",
+          "4 рет қайталанады, нәтижесі 5",
+          "3 рет қайталанады, нәтижесі 6"
+        ],
+        "correctAnswer": "2 рет қайталанады, нәтижесі 3",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Python циклдер"
+      },
+      {
+        "id": 35,
+        "question": "Егер операторында break операторы қолданылса, онда else операторынан кейінгі бөлік:",
+        "options": [
+          "орындалады",
+          "қайталанады",
+          "орындалмайды",
+          "5-рет қайталанады"
+        ],
+        "correctAnswer": "орындалмайды",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Python циклдер"
+      },
+      {
+        "id": 36,
+        "question": "x.insert(i, n)",
+        "options": [
+          "x массивінде n элементін көрсетілген i индексі бойынша енгізу",
+          "x массивінде i элементін көрсетілген n индексі бойынша енгізу.",
+          "i массивінде n элементін көрсетілген x индексі бойынша енгізу.",
+          "n массивінде i элементін көрсетілген x индексі бойынша енгізу."
+        ],
+        "correctAnswer": "x массивінде n элементін көрсетілген i индексі бойынша енгізу",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Python тізімдер"
+      },
+      {
+        "id": 37,
+        "question": "Символдары ASCII коды",
+        "options": [
+          "chr",
+          "ord",
+          "strip",
+          "len"
+        ],
+        "correctAnswer": "ord",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Python жолдар"
+      },
+      {
+        "id": 38,
+        "question": "X массивін мына түрде толтыру талап етіледі: X = [12, 9, 6, 3, 0, -3]. Циклде қандай оператор орналасуы қажет?",
+        "supportText": "X = [0] * 6\nfor k in range(6):\n    ...",
+        "options": [
+          "X[k] = k",
+          "X[k] = 12 - 2k",
+          "X[k] = 3*k-12",
+          "X[k]=12-3*k"
+        ],
+        "correctAnswer": "X[k]=12-3*k",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Python массивтер"
+      },
+      {
+        "id": 39,
+        "question": "Программа фрагментінің нәтижесі",
+        "supportText": "my_list = [[11, 12, 5, 2], [15, 6, 10, 5], [10, 8, 12, 5], [12, 15]]\nprint(my_list[2])",
+        "options": [
+          "11 12 5 2",
+          "15 6 10 5",
+          "10 8 12 5",
+          "12 5"
+        ],
+        "correctAnswer": "10 8 12 5",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Python тізімдер"
+      },
+      {
+        "id": 40,
+        "question": "Программа нәтижесі:",
+        "supportText": "i = 0\nwhile i < 6:\n    i += 1\n    if i == 3:\n        continue\n    print(i)",
+        "options": [
+          "0 1 2 3 4 5",
+          "1 2 4 5 6",
+          "1 2 3 4 5 6",
+          "1 2 3"
+        ],
+        "correctAnswer": "1 2 4 5 6",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Python циклдер"
       }
     ]
   }
