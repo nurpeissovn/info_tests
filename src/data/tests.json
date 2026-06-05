@@ -656,7 +656,7 @@
           "Сайтқа сілтеме",
           "Суретке сілтеме"
         ],
-        "correctAnswer": "Сайтқа сілтеме",
+        "correctAnswer": "<Бетке сілтеме",
         "points": 1,
         "subject": "Web Technologies",
         "topic": "HTML"
