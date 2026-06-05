@@ -49,6 +49,12 @@ export async function saveRemoteResult(record) {
   return data.record || record;
 }
 
+export async function deleteRemoteResult(attemptId) {
+  return request(`/results/${encodeURIComponent(attemptId)}`, {
+    method: "DELETE"
+  });
+}
+
 export async function fetchApiHealth() {
   return request("/health");
 }

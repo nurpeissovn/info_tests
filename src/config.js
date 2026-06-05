@@ -3,6 +3,7 @@ export const TEST_CONFIG = {
   maxViolations: 3,
   passPercentage: 60,
   teacherDashboardPassword: "teacher2026",
+  teacherResultCode: "2026",
   showReview: true,
   rules: [
     "Enter your real name and surname before starting the test.",

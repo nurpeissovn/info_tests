@@ -149,3 +149,22 @@ export async function upsertAttempt(record) {
 
   return record;
 }
+
+export async function deleteAttempt(attemptId) {
+  const client = getPool();
+
+  if (!client) {
+    memoryAttempts.delete(attemptId);
+    return true;
+  }
+
+  const result = await client.query(
+    `
+      DELETE FROM test_attempts
+      WHERE attempt_id = $1;
+    `,
+    [attemptId]
+  );
+
+  return result.rowCount > 0;
+}

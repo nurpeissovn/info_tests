@@ -67,6 +67,13 @@ export function appendAnalyticsRecord(record) {
   return next;
 }
 
+export function removeAnalyticsRecord(attemptId) {
+  const current = loadAnalytics();
+  const next = current.filter((record) => record.attemptId !== attemptId);
+  saveAnalytics(next);
+  return next;
+}
+
 export function mergeAnalyticsRecords(...recordGroups) {
   const seen = new Map();
 

@@ -2,7 +2,7 @@ import cors from "cors";
 import express from "express";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { ensureSchema, hasDatabaseConfig, listAttempts, upsertAttempt } from "./db.js";
+import { deleteAttempt, ensureSchema, hasDatabaseConfig, listAttempts, upsertAttempt } from "./db.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -100,6 +100,35 @@ app.post("/api/results", async (request, response) => {
     console.error("Failed to save attempt:", error);
     response.status(500).json({
       error: "Failed to save result."
+    });
+  }
+});
+
+app.delete("/api/results/:attemptId", async (request, response) => {
+  const { attemptId } = request.params;
+
+  if (!attemptId) {
+    response.status(400).json({ error: "attemptId is required." });
+    return;
+  }
+
+  try {
+    if (hasDatabaseConfig()) {
+      await ensureSchema();
+    }
+
+    const deleted = await deleteAttempt(attemptId);
+
+    if (!deleted) {
+      response.status(404).json({ error: "Result not found." });
+      return;
+    }
+
+    response.json({ ok: true });
+  } catch (error) {
+    console.error("Failed to delete attempt:", error);
+    response.status(500).json({
+      error: "Failed to delete result."
     });
   }
 });

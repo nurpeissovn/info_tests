@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import tests from "./data/tests.json";
 import {
   buildAttemptsTimeline,
@@ -141,7 +141,152 @@ function formatSourceLabel(sourceLabel) {
   return "Local browser storage";
 }
 
-function TeacherDashboard({ records, onBack, onLock, sourceLabel = "local", statusMessage = "" }) {
+function TeacherPencilCanvas() {
+  const canvasRef = useRef(null);
+  const isDrawingRef = useRef(false);
+
+  function getPoint(event) {
+    const canvas = canvasRef.current;
+    const rect = canvas.getBoundingClientRect();
+    const source = event.touches?.[0] || event;
+    return {
+      x: ((source.clientX - rect.left) / rect.width) * canvas.width,
+      y: ((source.clientY - rect.top) / rect.height) * canvas.height
+    };
+  }
+
+  function startDrawing(event) {
+    event.preventDefault();
+    const canvas = canvasRef.current;
+    const context = canvas.getContext("2d");
+    const point = getPoint(event);
+
+    isDrawingRef.current = true;
+    context.lineWidth = 4;
+    context.lineCap = "round";
+    context.strokeStyle = "#1b84ff";
+    context.beginPath();
+    context.moveTo(point.x, point.y);
+  }
+
+  function draw(event) {
+    if (!isDrawingRef.current) {
+      return;
+    }
+
+    event.preventDefault();
+    const context = canvasRef.current.getContext("2d");
+    const point = getPoint(event);
+    context.lineTo(point.x, point.y);
+    context.stroke();
+  }
+
+  function stopDrawing() {
+    isDrawingRef.current = false;
+  }
+
+  function clearCanvas() {
+    const canvas = canvasRef.current;
+    canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
+  }
+
+  return (
+    <div className="teacher-pencil">
+      <div className="teacher-pencil__toolbar">
+        <span>Pencil Board</span>
+        <button className="secondary-button" type="button" onClick={clearCanvas}>
+          Clear
+        </button>
+      </div>
+      <canvas
+        ref={canvasRef}
+        width="960"
+        height="420"
+        onMouseDown={startDrawing}
+        onMouseMove={draw}
+        onMouseUp={stopDrawing}
+        onMouseLeave={stopDrawing}
+        onTouchStart={startDrawing}
+        onTouchMove={draw}
+        onTouchEnd={stopDrawing}
+      />
+    </div>
+  );
+}
+
+function AttemptReviewModal({ attempt, questionId, onSelectQuestion, onClose }) {
+  if (!attempt) {
+    return null;
+  }
+
+  const selectedItem = attempt.review.find((item) => item.id === questionId) || attempt.review[0];
+  const selectedTest = tests.find((test) => test.id === attempt.testId);
+  const question = selectedTest?.questions.find((item) => item.id === selectedItem?.id);
+  const selectedAnswer = selectedItem?.selectedAnswer || "No answer selected";
+  const correctAnswer = selectedItem?.correctAnswer || "No correct answer";
+
+  return (
+    <div className="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="attempt-review-title">
+      <div className="card modal-card modal-card--wide">
+        <div className="card__header">
+          <div>
+            <p className="section-label">Teacher Review</p>
+            <h2 id="attempt-review-title">
+              {attempt.student.name} {attempt.student.surname} • {attempt.testTitle}
+            </h2>
+          </div>
+          <button className="secondary-button" type="button" onClick={onClose}>
+            Close
+          </button>
+        </div>
+
+        <div className="review-number-grid">
+          {attempt.review.map((item, index) => (
+            <button
+              key={item.id}
+              type="button"
+              className={`review-number ${item.id === selectedItem?.id ? "is-current" : ""} ${item.isCorrect ? "is-correct" : "is-wrong"}`}
+              onClick={() => onSelectQuestion(item.id)}
+            >
+              {index + 1}
+            </button>
+          ))}
+        </div>
+
+        <div className="teacher-review-layout">
+          <section className="teacher-question-panel">
+            <div className="question-card__meta">
+              <span>Question {attempt.review.findIndex((item) => item.id === selectedItem?.id) + 1}</span>
+              <span>{selectedItem?.isCorrect ? "Correct" : "Mistake"}</span>
+            </div>
+            <h3>{question?.question || selectedItem?.question}</h3>
+            {question?.supportText ? <pre className="question-card__support-text">{question.supportText}</pre> : null}
+            {question?.supportImage ? (
+              <div className="question-media">
+                <img className="question-media__support" src={question.supportImage} alt={`${question.question} supporting figure`} />
+              </div>
+            ) : null}
+
+            <div className="answer-compare-grid">
+              <div className={`answer-compare-card ${selectedItem?.isCorrect ? "is-correct" : "is-wrong"}`}>
+                <span>Student Answer</span>
+                <strong>{selectedAnswer}</strong>
+              </div>
+              <div className="answer-compare-card is-correct">
+                <span>Correct Answer</span>
+                <strong>{correctAnswer}</strong>
+              </div>
+            </div>
+          </section>
+
+          <TeacherPencilCanvas />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function TeacherDashboard({ records, onBack, onLock, onDeleteRecord, resultCode, sourceLabel = "local", statusMessage = "" }) {
   const [search, setSearch] = useState("");
   const [filterTest, setFilterTest] = useState("all");
   const [filterPass, setFilterPass] = useState("all");
@@ -149,6 +294,8 @@ function TeacherDashboard({ records, onBack, onLock, sourceLabel = "local", stat
   const [selectedStudentId, setSelectedStudentId] = useState("");
   const [selectedQuestionKey, setSelectedQuestionKey] = useState("");
   const [selectedQuestionTestId, setSelectedQuestionTestId] = useState(tests[0]?.id || "");
+  const [selectedAttempt, setSelectedAttempt] = useState(null);
+  const [selectedAttemptQuestionId, setSelectedAttemptQuestionId] = useState(null);
 
   const normalizedRecords = useMemo(() => records.map(normalizeAnalyticsRecord), [records]);
   const overview = useMemo(() => buildTeacherOverview(normalizedRecords), [normalizedRecords]);
@@ -186,12 +333,16 @@ function TeacherDashboard({ records, onBack, onLock, sourceLabel = "local", stat
             <p className="section-label">Teacher Dashboard</p>
             <h1>Class Analytics</h1>
             <p className="dashboard-hero__text">
-              Deep analytics from completed test attempts. Current source: {formatSourceLabel(sourceLabel)}.
+              Completed attempts. Current source: {formatSourceLabel(sourceLabel)}.
             </p>
             {statusMessage ? <p className="dashboard-hero__text">{statusMessage}</p> : null}
           </div>
 
           <div className="dashboard-actions">
+            <div className="teacher-code-card">
+              <span>Result Code</span>
+              <strong>{resultCode}</strong>
+            </div>
             <button className="secondary-button" type="button" onClick={onBack}>
               Back To Student Mode
             </button>
@@ -201,17 +352,6 @@ function TeacherDashboard({ records, onBack, onLock, sourceLabel = "local", stat
             <button className="secondary-button" type="button" onClick={() => exportRecordsCsv(tableRecords)}>
               Export CSV / Excel
             </button>
-            <button
-              className="secondary-button"
-              type="button"
-              onClick={() => exportStudentReportPdf(selectedProfile)}
-              disabled={!selectedProfile}
-            >
-              Export Student PDF
-            </button>
-            <button className="primary-button" type="button" onClick={() => exportFullAnalyticsReport(fullReportPayload)}>
-              Export Full Report
-            </button>
           </div>
         </header>
 
@@ -219,54 +359,7 @@ function TeacherDashboard({ records, onBack, onLock, sourceLabel = "local", stat
           <div className="metric-card"><div><p className="metric-card__label">Total Students</p><p className="metric-card__value">{overview.totalStudents}</p></div></div>
           <div className="metric-card"><div><p className="metric-card__label">Total Attempts</p><p className="metric-card__value">{overview.totalAttempts}</p></div></div>
           <div className="metric-card metric-card--accent"><div><p className="metric-card__label">Average Score</p><p className="metric-card__value">{overview.averageScore}%</p></div></div>
-          <div className="metric-card"><div><p className="metric-card__label">Highest Score</p><p className="metric-card__value">{overview.highestScore}%</p></div></div>
-          <div className="metric-card"><div><p className="metric-card__label">Lowest Score</p><p className="metric-card__value">{overview.lowestScore}%</p></div></div>
           <div className="metric-card metric-card--accent"><div><p className="metric-card__label">Pass Rate</p><p className="metric-card__value">{overview.passRate}%</p></div></div>
-          <div className="metric-card"><div><p className="metric-card__label">Avg. Time</p><p className="metric-card__value">{formatDuration(overview.averageTimeSpent)}</p></div></div>
-          <div className="metric-card metric-card--danger"><div><p className="metric-card__label">Avg. Warnings</p><p className="metric-card__value">{overview.averageWarnings}</p></div></div>
-        </section>
-
-        <section className="dashboard-charts">
-          <article className="card analytics-section">
-            <div className="card__header">
-              <div>
-                <p className="section-label">Overview Chart</p>
-                <h2>Attempts Over Time</h2>
-              </div>
-            </div>
-            <LineChart data={attemptsTimeline} />
-          </article>
-
-          <article className="card analytics-section">
-            <div className="card__header">
-              <div>
-                <p className="section-label">Pass / Fail</p>
-                <h2>Class Pass Rate</h2>
-              </div>
-            </div>
-            <DonutChart value={overview.passRate} label="Pass Rate" />
-          </article>
-
-          <article className="card analytics-section">
-            <div className="card__header">
-              <div>
-                <p className="section-label">Topic Heatmap</p>
-                <h2>Accuracy By Topic</h2>
-              </div>
-            </div>
-            <div className="heatmap-grid">
-              {topicAnalytics.map((topic) => (
-                <div
-                  key={topic.subject}
-                  className="heatmap-cell"
-                  style={{ background: `rgba(15, 125, 255, ${Math.max(0.15, topic.averageAccuracy / 100)})` }}
-                >
-                  <strong>{topic.subject}</strong>
-                  <span>{topic.averageAccuracy}%</span>
-                </div>
-              ))}
-            </div>
-          </article>
         </section>
 
         <section className="card analytics-section">
@@ -319,6 +412,7 @@ function TeacherDashboard({ records, onBack, onLock, sourceLabel = "local", stat
                   <th>Date</th>
                   <th>Status</th>
                   <th>Warnings</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -338,6 +432,31 @@ function TeacherDashboard({ records, onBack, onLock, sourceLabel = "local", stat
                     <td>{new Date(record.submittedAt).toLocaleDateString()}</td>
                     <td>{record.passed ? "Pass" : "Fail"}</td>
                     <td>{record.warningCount}</td>
+                    <td>
+                      <div className="record-actions">
+                        <button
+                          className="secondary-button"
+                          type="button"
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            setSelectedAttempt(record);
+                            setSelectedAttemptQuestionId(record.review[0]?.id || null);
+                          }}
+                        >
+                          Review
+                        </button>
+                        <button
+                          className="secondary-button secondary-button--danger"
+                          type="button"
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            onDeleteRecord(record);
+                          }}
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -345,199 +464,15 @@ function TeacherDashboard({ records, onBack, onLock, sourceLabel = "local", stat
           </div>
         </section>
 
-        {selectedProfile ? (
-          <section className="card analytics-section">
-            <div className="card__header">
-              <div>
-                <p className="section-label">Student Profile</p>
-                <h2>
-                  {selectedProfile.name} {selectedProfile.surname}
-                </h2>
-              </div>
-            </div>
-
-            <div className="student-profile-grid">
-              <div className="student-profile-main">
-                <div className="metrics-grid metrics-grid--results">
-                  <div className="metric-card"><div><p className="metric-card__label">Attempts</p><p className="metric-card__value">{selectedProfile.attempts.length}</p></div></div>
-                  <div className="metric-card"><div><p className="metric-card__label">Average Score</p><p className="metric-card__value">{selectedProfile.averageScore}%</p></div></div>
-                  <div className="metric-card"><div><p className="metric-card__label">Best Score</p><p className="metric-card__value">{selectedProfile.bestScore}%</p></div></div>
-                  <div className="metric-card"><div><p className="metric-card__label">Trend</p><p className="metric-card__value">{selectedProfile.trendLabel}</p></div></div>
-                </div>
-
-                <div className="analytics-note-grid">
-                  <article className="analytics-note-card">
-                    <h3>Teacher Comments</h3>
-                    <ul className="diagnosis-list">
-                      {selectedProfile.diagnoses.map((note) => (
-                        <li key={note}>{note}</li>
-                      ))}
-                    </ul>
-                  </article>
-
-                  <article className="analytics-note-card">
-                    <h3>Strong Topics</h3>
-                    {selectedProfile.strongTopics.length ? (
-                      selectedProfile.strongTopics.map((topic) => (
-                        <div key={topic.subject} className="topic-bar">
-                          <div>
-                            <strong>{topic.subject}</strong>
-                            <span>{topic.accuracy}% accuracy</span>
-                          </div>
-                          <ProgressBar value={topic.accuracy} />
-                        </div>
-                      ))
-                    ) : (
-                      <p className="analytics-empty">No strong topics detected yet.</p>
-                    )}
-                  </article>
-
-                  <article className="analytics-note-card">
-                    <h3>Weak Topics</h3>
-                    {selectedProfile.weakTopics.length ? (
-                      selectedProfile.weakTopics.map((topic) => (
-                        <div key={topic.subject} className="topic-bar">
-                          <div>
-                            <strong>{topic.subject}</strong>
-                            <span>{topic.accuracy}% accuracy</span>
-                          </div>
-                          <ProgressBar value={topic.accuracy} />
-                        </div>
-                      ))
-                    ) : (
-                      <p className="analytics-empty">No weak topics detected yet.</p>
-                    )}
-                  </article>
-                </div>
-
-                <article className="analytics-note-card">
-                  <h3>All Attempts</h3>
-                  <div className="analytics-list">
-                    {selectedProfile.attempts.map((attempt) => (
-                      <article key={`${attempt.testId}-${attempt.submittedAt}`} className="analytics-item">
-                        <div>
-                          <strong>{attempt.testTitle}</strong>
-                          <p>{new Date(attempt.submittedAt).toLocaleString()}</p>
-                        </div>
-                        <span>{attempt.percentage}%</span>
-                      </article>
-                    ))}
-                  </div>
-                </article>
-              </div>
-
-              <aside className="student-profile-side">
-                <article className="analytics-note-card">
-                  <h3>Score History</h3>
-                  <LineChart
-                    data={selectedProfile.attempts.map((attempt, index) => ({
-                      label: `Try ${index + 1}`,
-                      value: attempt.percentage
-                    }))}
-                  />
-                </article>
-
-                <article className="analytics-note-card">
-                  <h3>Warning History</h3>
-                  <LineChart
-                    data={selectedProfile.warningHistory.map((warning, index) => ({
-                      label: `Try ${index + 1}`,
-                      value: warning.value
-                    }))}
-                  />
-                </article>
-
-                <article className="analytics-note-card">
-                  <h3>Accuracy By Subject</h3>
-                  {selectedProfile.subjects.map((subject) => (
-                    <div key={subject.subject} className="topic-bar">
-                      <div>
-                        <strong>{subject.subject}</strong>
-                        <span>{subject.averageTime}s avg. time</span>
-                      </div>
-                      <ProgressBar value={subject.accuracy} />
-                    </div>
-                  ))}
-                </article>
-              </aside>
-            </div>
-          </section>
-        ) : null}
-
-        <section className="dashboard-two-column">
-          <section className="card analytics-section">
-            <div className="card__header">
-              <div>
-                <p className="section-label">Topic Analytics</p>
-                <h2>Topic Performance</h2>
-              </div>
-            </div>
-
-            <div className="analytics-list">
-              {topicAnalytics.map((topic) => (
-                <article key={topic.subject} className="topic-analytics-card">
-                  <div className="analytics-item">
-                    <div>
-                      <strong>{topic.subject}</strong>
-                      <p>{topic.difficulty} difficulty</p>
-                    </div>
-                    <span>{topic.averageAccuracy}%</span>
-                  </div>
-                  <ProgressBar value={topic.averageAccuracy} />
-                  <p>
-                    Correct: {topic.correctCount} • Wrong: {topic.wrongCount}
-                  </p>
-                  <p>Struggling: {topic.strugglingStudents.join(", ") || "None"}</p>
-                  <p>Mastering: {topic.masteringStudents.join(", ") || "None"}</p>
-                  <p>{topic.recommendedRevision}</p>
-                </article>
-              ))}
-            </div>
-          </section>
-
-          <section className="card analytics-section">
-            <div className="card__header">
-              <div>
-                <p className="section-label">Question Analytics</p>
-                <h2>Question Difficulty</h2>
-              </div>
-            </div>
-
-            <div className="question-test-tabs">
-              {tests.map((test) => (
-                <button
-                  key={test.id}
-                  type="button"
-                  className={`question-test-tab ${selectedQuestionTestId === test.id ? "is-active" : ""}`}
-                  onClick={() => setSelectedQuestionTestId(test.id)}
-                >
-                  {test.title}
-                </button>
-              ))}
-            </div>
-
-            <div className="question-picker-grid">
-              {visibleQuestionAnalytics.map((question) => (
-                <button
-                  key={question.key}
-                  type="button"
-                  className={`question-pill ${
-                    question.accuracy >= 80 ? "is-good" : question.accuracy >= 55 ? "is-medium" : "is-bad"
-                  }`}
-                  onClick={() => setSelectedQuestionKey(question.key)}
-                  title={`Q${question.questionId}`}
-                >
-                  <span className="question-pill__number">{question.questionId}</span>
-                  <span className="question-pill__meta">
-                    <small>{question.accuracy}%</small>
-                  </span>
-                </button>
-              ))}
-            </div>
-          </section>
-        </section>
-
-        <QuestionDetailModal question={selectedQuestion} onClose={() => setSelectedQuestionKey("")} />
+        <AttemptReviewModal
+          attempt={selectedAttempt}
+          questionId={selectedAttemptQuestionId}
+          onSelectQuestion={setSelectedAttemptQuestionId}
+          onClose={() => {
+            setSelectedAttempt(null);
+            setSelectedAttemptQuestionId(null);
+          }}
+        />
       </section>
     </main>
   );

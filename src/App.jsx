@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import tests from "./data/tests.json";
 import TeacherDashboard from "./TeacherDashboard";
 import { TEST_CONFIG } from "./config";
-import { fetchRemoteResults, saveRemoteResult } from "./api";
+import { deleteRemoteResult, fetchRemoteResults, saveRemoteResult } from "./api";
 import {
   appendAnalyticsRecord,
   buildAnalyticsSummary,
@@ -13,6 +13,7 @@ import {
   getTotalPoints,
   loadAnalytics,
   mergeAnalyticsRecords,
+  removeAnalyticsRecord,
   loadSession,
   saveSession
 } from "./utils";
@@ -32,10 +33,6 @@ function createSubmitChallenge() {
     left: Math.floor(Math.random() * 8) + 2,
     right: Math.floor(Math.random() * 8) + 2
   };
-}
-
-function createScoreUnlockCode() {
-  return String(Math.floor(Math.random() * 9000) + 1000);
 }
 
 function attemptFullscreen() {
@@ -315,18 +312,19 @@ function IntroScreen({ studentDraft, onDraftChange, onStart, analyticsRecords, o
   );
 }
 
-function QuestionNavigation({ questions, answers, currentQuestionId, onSelectQuestion }) {
+function QuestionNavigation({ questions, answers, currentQuestionId, statusByQuestionId = {}, onSelectQuestion }) {
   return (
     <nav className="question-nav" aria-label="Question navigation">
       {questions.map((question, index) => {
         const isCurrent = question.id === currentQuestionId;
         const isAnswered = Boolean(answers[question.id]);
+        const status = statusByQuestionId[question.id] || "";
 
         return (
           <button
             key={question.id}
             type="button"
-            className={["question-nav__item", isCurrent ? "is-current" : "", isAnswered ? "is-answered" : ""]
+            className={["question-nav__item", isCurrent ? "is-current" : "", isAnswered ? "is-answered" : "", status ? `is-${status}` : ""]
               .filter(Boolean)
               .join(" ")}
             onClick={() => onSelectQuestion(index)}
@@ -498,11 +496,86 @@ function ResultScreen({ result, onRestart, onAnalyze }) {
   );
 }
 
+function AnalysisPencilLayer() {
+  const canvasRef = useRef(null);
+  const isDrawingRef = useRef(false);
+
+  function getPoint(event) {
+    const canvas = canvasRef.current;
+    const rect = canvas.getBoundingClientRect();
+    const source = event.touches?.[0] || event;
+
+    return {
+      x: ((source.clientX - rect.left) / rect.width) * canvas.width,
+      y: ((source.clientY - rect.top) / rect.height) * canvas.height
+    };
+  }
+
+  function startDrawing(event) {
+    event.preventDefault();
+    const canvas = canvasRef.current;
+    const context = canvas.getContext("2d");
+    const point = getPoint(event);
+
+    isDrawingRef.current = true;
+    context.lineWidth = 4;
+    context.lineCap = "round";
+    context.strokeStyle = "#1b84ff";
+    context.beginPath();
+    context.moveTo(point.x, point.y);
+  }
+
+  function draw(event) {
+    if (!isDrawingRef.current) {
+      return;
+    }
+
+    event.preventDefault();
+    const context = canvasRef.current.getContext("2d");
+    const point = getPoint(event);
+    context.lineTo(point.x, point.y);
+    context.stroke();
+  }
+
+  function stopDrawing() {
+    isDrawingRef.current = false;
+  }
+
+  function clearCanvas() {
+    const canvas = canvasRef.current;
+    canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
+  }
+
+  return (
+    <div className="analysis-pencil">
+      <button className="secondary-button analysis-pencil__clear" type="button" onClick={clearCanvas}>
+        Clear Pencil
+      </button>
+      <canvas
+        ref={canvasRef}
+        width="1200"
+        height="760"
+        onMouseDown={startDrawing}
+        onMouseMove={draw}
+        onMouseUp={stopDrawing}
+        onMouseLeave={stopDrawing}
+        onTouchStart={startDrawing}
+        onTouchMove={draw}
+        onTouchEnd={stopDrawing}
+      />
+    </div>
+  );
+}
+
 function StudentAnalysisScreen({ result, currentIndex, onSelectQuestion, onPrevious, onNext, onFinish }) {
   const selectedTest = findTestById(result.testId);
   const reviewItem = result.review[currentIndex];
   const question = selectedTest.questions.find((item) => item.id === reviewItem?.id) || selectedTest.questions[currentIndex];
   const selectedAnswer = reviewItem?.selectedAnswer || "";
+  const correctAnswer = reviewItem?.correctAnswer || "";
+  const reviewStatusByQuestionId = Object.fromEntries(
+    result.review.map((item) => [item.id, item.isCorrect ? "correct" : item.selectedAnswer ? "wrong" : "empty"])
+  );
 
   return (
     <main className="page-shell page-shell--compact">
@@ -517,64 +590,66 @@ function StudentAnalysisScreen({ result, currentIndex, onSelectQuestion, onPrevi
               {result.testTitle} • Question {currentIndex + 1} of {result.review.length}
             </p>
           </div>
-
-          <div className="metrics-grid metrics-grid--top">
-            <MetricCard icon={ICONS.question} label="Questions" value={result.review.length} />
-            <MetricCard icon={ICONS.analytics} label="Mode" value="Discuss" tone="accent" />
-          </div>
         </header>
 
         <QuestionNavigation
           questions={result.review}
           answers={Object.fromEntries(result.review.filter((item) => item.selectedAnswer).map((item) => [item.id, item.selectedAnswer]))}
           currentQuestionId={reviewItem?.id}
+          statusByQuestionId={reviewStatusByQuestionId}
           onSelectQuestion={onSelectQuestion}
         />
 
         <article className="card question-card">
-          <div className="question-card__meta">
-            <span>
-              Question {currentIndex + 1} of {result.review.length}
-            </span>
-            <span>{question?.subject || "Analysis"}</span>
-          </div>
-
-          <div className="question-card__prompt">
-            <h2>{question?.question || reviewItem?.question}</h2>
-            {question?.supportText ? <pre className="question-card__support-text">{question.supportText}</pre> : null}
-          </div>
-
-          {question?.supportImage ? (
-            <div className="question-media">
-              <img
-                className="question-media__support"
-                src={question.supportImage}
-                alt={`${question.question} supporting figure`}
-              />
+          <div className="analysis-write-zone">
+            <div className="question-card__meta">
+              <span>
+                Question {currentIndex + 1} of {result.review.length}
+              </span>
+              <span>{question?.subject || "Analysis"}</span>
             </div>
-          ) : null}
 
-          <div className="options-list" role="list" aria-label={`Question ${currentIndex + 1} selected answer`}>
-            {(question?.options || []).map((option) => {
-              const selected = selectedAnswer === option;
+            <div className="question-card__prompt">
+              <h2>{question?.question || reviewItem?.question}</h2>
+              {question?.supportText ? <pre className="question-card__support-text">{question.supportText}</pre> : null}
+            </div>
 
-              return (
-                <div key={option} className={`option-card ${selected ? "is-selected" : ""}`} role="listitem">
-                  <span className="option-card__indicator" />
-                  <span className="option-card__text">{option}</span>
-                </div>
-              );
-            })}
-          </div>
-
-          <div className="review-list">
-            <div className="review-item">
-              <div className="review-item__heading">
-                <strong>Student Answer</strong>
-                <span>{selectedAnswer ? "Selected" : "Empty"}</span>
+            {question?.supportImage ? (
+              <div className="question-media">
+                <img
+                  className="question-media__support"
+                  src={question.supportImage}
+                  alt={`${question.question} supporting figure`}
+                />
               </div>
-              <p>{selectedAnswer || "No answer selected"}</p>
+            ) : null}
+
+            <div className="options-list" role="list" aria-label={`Question ${currentIndex + 1} answer choices`}>
+              {(question?.options || []).map((option) => {
+                const isStudentAnswer = selectedAnswer === option;
+                const isCorrectAnswer = correctAnswer === option;
+
+                return (
+                  <div
+                    key={option}
+                    className={[
+                      "option-card",
+                      isCorrectAnswer ? "is-correct-answer" : "",
+                      isStudentAnswer && !isCorrectAnswer ? "is-student-wrong" : "",
+                      isStudentAnswer ? "is-selected" : ""
+                    ]
+                      .filter(Boolean)
+                      .join(" ")}
+                    role="listitem"
+                  >
+                    <span className="option-card__indicator" />
+                    <span className="option-card__text">{option}</span>
+                  </div>
+                );
+              })}
             </div>
+
+            <AnalysisPencilLayer key={reviewItem?.id} />
           </div>
 
           <div className="question-card__actions">
@@ -661,20 +736,15 @@ function ScoreRevealScreen({ result, onRestart, onAnalyzeAgain }) {
   );
 }
 
-function ScoreUnlockScreen({ code, input, error, onInputChange, onSubmit, onBackToAnalyze }) {
+function ScoreUnlockScreen({ input, error, onInputChange, onSubmit, onBackToAnalyze }) {
   return (
     <main className="page-shell">
       <section className="score-unlock" aria-labelledby="score-unlock-title">
         <div className="score-unlock__panel">
-          <div className="score-unlock__teacher">
-            <span className="score-unlock__label">Teacher Code</span>
-            <strong>{code}</strong>
-          </div>
-
           <div className="score-unlock__content">
-            <span className="eyebrow">Final Confirmation</span>
-            <h1 id="score-unlock-title">Enter the teacher code</h1>
-            <p>Results open only after the class analysis is finished.</p>
+            <span className="eyebrow">Teacher Confirmation</span>
+            <h1 id="score-unlock-title">Enter teacher code</h1>
+            <p>Results open after your teacher gives the confirmation number.</p>
 
             <form className="score-unlock__form" onSubmit={onSubmit}>
               <label className="field">
@@ -728,7 +798,6 @@ export default function App() {
   const [submitChallengeAnswer, setSubmitChallengeAnswer] = useState("");
   const [submitChallengeError, setSubmitChallengeError] = useState("");
   const [showSubmitConfirmationModal, setShowSubmitConfirmationModal] = useState(false);
-  const [scoreUnlockCode, setScoreUnlockCode] = useState(createScoreUnlockCode);
   const [scoreUnlockInput, setScoreUnlockInput] = useState("");
   const [scoreUnlockError, setScoreUnlockError] = useState("");
   const [analyticsSource, setAnalyticsSource] = useState("local");
@@ -1068,6 +1137,33 @@ export default function App() {
     setDashboardPasswordError("");
   }
 
+  async function handleDeleteRecord(record) {
+    if (!record?.attemptId) {
+      return;
+    }
+
+    const studentName = `${record.student?.name || ""} ${record.student?.surname || ""}`.trim();
+    const confirmed = window.confirm(`Remove ${studentName}'s ${record.testTitle} result?`);
+
+    if (!confirmed) {
+      return;
+    }
+
+    const nextLocalRecords = removeAnalyticsRecord(record.attemptId);
+    const nextMergedRecords = analyticsRecords.filter((item) => item.attemptId !== record.attemptId);
+
+    setAnalyticsRecords(nextMergedRecords);
+
+    try {
+      await deleteRemoteResult(record.attemptId);
+      await refreshRemoteAnalytics(nextLocalRecords);
+    } catch {
+      setAnalyticsRecords(mergeAnalyticsRecords(nextMergedRecords, nextLocalRecords));
+      setApiStatusMessage("Result removed locally. Backend delete is currently unavailable.");
+      setAnalyticsSource("local");
+    }
+  }
+
   function requestSubmitConfirmation() {
     setSubmitChallenge(createSubmitChallenge());
     setSubmitChallengeAnswer("");
@@ -1095,7 +1191,6 @@ export default function App() {
   }
 
   function requestScoreUnlock() {
-    setScoreUnlockCode(createScoreUnlockCode());
     setScoreUnlockInput("");
     setScoreUnlockError("");
     setStage("scoreGate");
@@ -1104,7 +1199,7 @@ export default function App() {
   function confirmScoreUnlock(event) {
     event.preventDefault();
 
-    if (scoreUnlockInput !== scoreUnlockCode) {
+    if (scoreUnlockInput !== TEST_CONFIG.teacherResultCode) {
       setScoreUnlockError("Incorrect code. Ask the teacher for the confirmation code.");
       return;
     }
@@ -1279,6 +1374,8 @@ export default function App() {
         records={analyticsRecords}
         onBack={() => setViewMode("student")}
         onLock={lockTeacherDashboard}
+        onDeleteRecord={handleDeleteRecord}
+        resultCode={TEST_CONFIG.teacherResultCode}
         sourceLabel={analyticsSource}
         statusMessage={apiStatusMessage}
       />
@@ -1305,7 +1402,6 @@ export default function App() {
   if (stage === "scoreGate" && result) {
     return (
       <ScoreUnlockScreen
-        code={scoreUnlockCode}
         input={scoreUnlockInput}
         error={scoreUnlockError}
         onInputChange={setScoreUnlockInput}

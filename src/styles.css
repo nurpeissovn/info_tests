@@ -557,6 +557,31 @@ button {
   align-self: stretch;
 }
 
+.teacher-code-card {
+  display: grid;
+  gap: 4px;
+  min-height: 46px;
+  padding: 10px 14px;
+  border-radius: 16px;
+  color: #ffffff;
+  background: linear-gradient(135deg, #173b53, #1b84ff);
+  box-shadow: 0 14px 28px rgba(27, 132, 255, 0.18);
+}
+
+.teacher-code-card span {
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.82;
+}
+
+.teacher-code-card strong {
+  font-size: 1.35rem;
+  line-height: 1;
+  letter-spacing: 0.08em;
+}
+
 .dashboard-charts {
   grid-template-columns: 1.25fr 0.75fr 1fr;
 }
@@ -759,6 +784,27 @@ button {
   background: rgba(239, 246, 255, 0.75);
 }
 
+.records-table td:last-child {
+  width: 1%;
+  white-space: nowrap;
+}
+
+.record-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.secondary-button--danger {
+  color: #9f4035;
+  box-shadow: inset 0 0 0 1px rgba(198, 91, 76, 0.32);
+  background: rgba(255, 241, 239, 0.96);
+}
+
+.secondary-button--danger:hover {
+  background: rgba(255, 231, 228, 0.98);
+}
+
 .student-profile-grid,
 .dashboard-two-column {
   grid-template-columns: minmax(0, 1.3fr) minmax(320px, 0.7fr);
@@ -815,6 +861,12 @@ button {
 
 .modal-card {
   width: min(100%, 480px);
+}
+
+.modal-card--wide {
+  width: min(1180px, 96vw);
+  max-height: 92vh;
+  overflow: auto;
 }
 
 .modal-card__text {
@@ -886,6 +938,26 @@ button {
 .question-nav__item.is-answered:not(.is-current) {
   color: #166753;
   background: linear-gradient(180deg, rgba(231, 248, 239, 0.98), rgba(219, 242, 230, 0.98));
+}
+
+.question-nav__item.is-correct:not(.is-current) {
+  color: #166753;
+  background: linear-gradient(180deg, rgba(230, 247, 236, 0.98), rgba(216, 241, 227, 0.98));
+}
+
+.question-nav__item.is-wrong:not(.is-current),
+.question-nav__item.is-empty:not(.is-current) {
+  color: #9f4035;
+  background: linear-gradient(180deg, rgba(255, 239, 237, 0.98), rgba(252, 226, 224, 0.98));
+}
+
+.question-nav__item.is-current.is-correct {
+  background: linear-gradient(135deg, #1f9b72, #69d29f);
+}
+
+.question-nav__item.is-current.is-wrong,
+.question-nav__item.is-current.is-empty {
+  background: linear-gradient(135deg, #d64f45, #ff8b7d);
 }
 
 .question-card__meta {
@@ -977,6 +1049,16 @@ button {
     0 16px 28px rgba(72, 144, 255, 0.15);
 }
 
+.option-card.is-correct-answer {
+  background: rgba(231, 248, 239, 0.96);
+  box-shadow: inset 0 0 0 1px rgba(68, 174, 124, 0.45);
+}
+
+.option-card.is-student-wrong {
+  background: rgba(255, 239, 238, 0.96);
+  box-shadow: inset 0 0 0 1px rgba(205, 86, 74, 0.42);
+}
+
 .option-card__indicator {
   flex: 0 0 auto;
   width: 20px;
@@ -992,6 +1074,184 @@ button {
 
 .option-card.is-selected .option-card__indicator {
   box-shadow: inset 0 0 0 6px #1b84ff;
+}
+
+.answer-compare-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.answer-compare-card {
+  min-height: 112px;
+  padding: 18px;
+  border-radius: 20px;
+  box-shadow: inset 0 0 0 1px rgba(202, 213, 230, 0.82);
+  background: rgba(246, 249, 253, 0.96);
+}
+
+.answer-compare-card span,
+.analysis-summary-strip span {
+  display: block;
+  margin-bottom: 8px;
+  color: #6f7b8e;
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.answer-compare-card strong,
+.analysis-summary-strip strong {
+  display: block;
+  color: #17253b;
+  line-height: 1.35;
+}
+
+.answer-compare-card.is-correct {
+  background: rgba(231, 248, 239, 0.96);
+  box-shadow: inset 0 0 0 1px rgba(68, 174, 124, 0.35);
+}
+
+.answer-compare-card.is-wrong {
+  background: rgba(255, 239, 238, 0.96);
+  box-shadow: inset 0 0 0 1px rgba(205, 86, 74, 0.35);
+}
+
+.analysis-summary-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.analysis-summary-strip div {
+  padding: 14px;
+  border-radius: 18px;
+  background: rgba(246, 249, 253, 0.96);
+  box-shadow: inset 0 0 0 1px rgba(202, 213, 230, 0.82);
+}
+
+.analysis-write-zone {
+  position: relative;
+  display: block;
+  min-height: 0;
+  padding-top: 6px;
+}
+
+.analysis-write-zone .question-card__meta {
+  padding-right: 170px;
+}
+
+.analysis-write-zone .question-card__prompt {
+  margin-top: 22px;
+}
+
+.analysis-write-zone .options-list {
+  margin-top: 22px;
+}
+
+.analysis-pencil {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.analysis-pencil canvas {
+  width: 100%;
+  height: 100%;
+  border-radius: 24px;
+  touch-action: none;
+  pointer-events: auto;
+}
+
+.analysis-pencil__clear {
+  position: absolute;
+  top: 4px;
+  right: 0;
+  z-index: 5;
+  pointer-events: auto;
+  min-height: 40px;
+  padding: 9px 13px;
+}
+
+.review-number-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(44px, 1fr));
+  gap: 8px;
+}
+
+.review-number {
+  min-height: 44px;
+  border: 0;
+  border-radius: 14px;
+  color: #17253b;
+  font-weight: 900;
+}
+
+.review-number.is-correct {
+  background: rgba(231, 248, 239, 0.98);
+  color: #166753;
+}
+
+.review-number.is-wrong {
+  background: rgba(255, 239, 238, 0.98);
+  color: #9f4035;
+}
+
+.review-number.is-current {
+  outline: 3px solid rgba(27, 132, 255, 0.36);
+}
+
+.teacher-review-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 0.8fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.teacher-question-panel {
+  display: grid;
+  gap: 14px;
+}
+
+.teacher-question-panel h3 {
+  margin: 0;
+  color: #17253b;
+  font-size: 1.35rem;
+  line-height: 1.3;
+}
+
+.teacher-pencil {
+  display: grid;
+  gap: 10px;
+}
+
+.teacher-pencil__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.teacher-pencil__toolbar span {
+  color: #243c59;
+  font-weight: 900;
+}
+
+.teacher-pencil canvas {
+  width: 100%;
+  aspect-ratio: 16 / 7;
+  border-radius: 18px;
+  border: 1px solid rgba(202, 213, 230, 0.82);
+  background:
+    linear-gradient(rgba(27, 132, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(27, 132, 255, 0.06) 1px, transparent 1px),
+    rgba(255, 255, 255, 0.96);
+  background-size: 28px 28px;
+  touch-action: none;
 }
 
 .button-row {
