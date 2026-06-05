@@ -1,9 +1,11 @@
 import pg from "pg";
+import fs from "node:fs/promises";
+import path from "node:path";
 
 const { Pool } = pg;
 
 let pool;
-const memoryAttempts = new Map();
+const localStorePath = process.env.RESULT_STORE_PATH || path.resolve(process.cwd(), "server-data", "results.json");
 
 function getConnectionString() {
   return process.env.DATABASE_URL || process.env.POSTGRES_URL || process.env.POSTGRESQL_URL || "";
@@ -11,6 +13,10 @@ function getConnectionString() {
 
 export function hasDatabaseConfig() {
   return Boolean(getConnectionString());
+}
+
+export function getStorageMode() {
+  return hasDatabaseConfig() ? "postgres" : "file";
 }
 
 export function getPool() {
@@ -68,11 +74,31 @@ export async function ensureSchema() {
   return true;
 }
 
+async function readLocalAttempts() {
+  try {
+    const raw = await fs.readFile(localStorePath, "utf8");
+    const records = JSON.parse(raw);
+    return Array.isArray(records) ? records : [];
+  } catch (error) {
+    if (error.code === "ENOENT") {
+      return [];
+    }
+
+    throw error;
+  }
+}
+
+async function writeLocalAttempts(records) {
+  await fs.mkdir(path.dirname(localStorePath), { recursive: true });
+  await fs.writeFile(localStorePath, JSON.stringify(records, null, 2));
+}
+
 export async function listAttempts() {
   const client = getPool();
 
   if (!client) {
-    return Array.from(memoryAttempts.values()).sort(
+    const records = await readLocalAttempts();
+    return records.sort(
       (first, second) => Number(second.submittedAt || 0) - Number(first.submittedAt || 0)
     );
   }
@@ -90,7 +116,16 @@ export async function upsertAttempt(record) {
   const client = getPool();
 
   if (!client) {
-    memoryAttempts.set(record.attemptId, record);
+    const records = await readLocalAttempts();
+    const existingIndex = records.findIndex((item) => item.attemptId === record.attemptId);
+
+    if (existingIndex >= 0) {
+      records[existingIndex] = record;
+    } else {
+      records.unshift(record);
+    }
+
+    await writeLocalAttempts(records);
     return record;
   }
 
@@ -154,8 +189,10 @@ export async function deleteAttempt(attemptId) {
   const client = getPool();
 
   if (!client) {
-    memoryAttempts.delete(attemptId);
-    return true;
+    const records = await readLocalAttempts();
+    const nextRecords = records.filter((record) => record.attemptId !== attemptId);
+    await writeLocalAttempts(nextRecords);
+    return nextRecords.length !== records.length;
   }
 
   const result = await client.query(

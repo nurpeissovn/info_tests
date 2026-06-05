@@ -2,7 +2,7 @@ import cors from "cors";
 import express from "express";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { deleteAttempt, ensureSchema, hasDatabaseConfig, listAttempts, upsertAttempt } from "./db.js";
+import { deleteAttempt, ensureSchema, getStorageMode, hasDatabaseConfig, listAttempts, upsertAttempt } from "./db.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -36,7 +36,7 @@ function validateAttempt(payload) {
 }
 
 app.get("/api/health", async (_request, response) => {
-  let database = "disabled";
+  let database = getStorageMode();
 
   if (hasDatabaseConfig()) {
     try {
@@ -59,7 +59,7 @@ app.get("/api/results", async (_request, response) => {
   if (!hasDatabaseConfig()) {
     response.json({
       records: await listAttempts(),
-      source: "server-memory"
+      source: "file"
     });
     return;
   }
@@ -147,7 +147,7 @@ app.listen(port, async () => {
       await ensureSchema();
       console.log(`Server ready on port ${port} with PostgreSQL enabled.`);
     } else {
-      console.log(`Server ready on port ${port}. DATABASE_URL is not set, API will use shared in-memory results.`);
+      console.log(`Server ready on port ${port}. DATABASE_URL is not set, API will use the local results file.`);
     }
   } catch (error) {
     console.error("Server started, but database schema initialization failed:", error);

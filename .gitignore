@@ -4,3 +4,5 @@ dist
 .DS_Store
 extracted_pdf_images
 public/questions
+server-data
+recovered-results
