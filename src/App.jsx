@@ -825,6 +825,14 @@ export default function App() {
         setAnalyticsRecords(mergeAnalyticsRecords(remoteRecords, localRecords));
         setAnalyticsSource(source);
         setApiStatusMessage(remoteRecords.length ? "Results loaded from the shared server." : "Shared server has no records yet.");
+
+        return syncLocalAnalyticsToRemote(localRecords).then((syncedCount) => {
+          if (!isMounted || !syncedCount) {
+            return;
+          }
+
+          return refreshRemoteAnalytics(localRecords);
+        });
       })
       .catch(() => {
         if (!isMounted) {
@@ -1264,6 +1272,17 @@ export default function App() {
       setAnalyticsSource("local");
       setApiStatusMessage("Result saved locally. Backend sync is currently unavailable.");
     }
+  }
+
+  async function syncLocalAnalyticsToRemote(localRecords) {
+    const recordsToSync = (localRecords || []).filter((record) => record?.attemptId);
+
+    if (!recordsToSync.length) {
+      return 0;
+    }
+
+    const results = await Promise.allSettled(recordsToSync.map((record) => saveRemoteResult(record)));
+    return results.filter((result) => result.status === "fulfilled").length;
   }
 
   async function submitTest(note = "Submitted by student.") {
