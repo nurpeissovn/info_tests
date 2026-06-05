@@ -11,6 +11,25 @@ function getConnectionString() {
   return process.env.DATABASE_URL || process.env.POSTGRES_URL || process.env.POSTGRESQL_URL || "";
 }
 
+function getSslConfig() {
+  const connectionString = getConnectionString();
+  const sslMode = process.env.PGSSLMODE || "";
+
+  if (sslMode === "disable") {
+    return false;
+  }
+
+  if (sslMode === "require" || sslMode === "no-verify") {
+    return { rejectUnauthorized: false };
+  }
+
+  if (connectionString.includes("railway.internal")) {
+    return false;
+  }
+
+  return false;
+}
+
 export function hasDatabaseConfig() {
   return Boolean(getConnectionString());
 }
@@ -27,7 +46,7 @@ export function getPool() {
   if (!pool) {
     pool = new Pool({
       connectionString: getConnectionString(),
-      ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false
+      ssl: getSslConfig()
     });
   }
 
