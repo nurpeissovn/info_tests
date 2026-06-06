@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import tests from "./data/tests.json";
 import TeacherDashboard from "./TeacherDashboard";
 import { TEST_CONFIG } from "./config";
-import { deleteRemoteResult, fetchRemoteResults, saveRemoteResult } from "./api";
+import { deleteRemoteResult, fetchRemoteResults, fetchRemoteTests, saveRemoteResult, saveRemoteTests } from "./api";
 import {
   appendAnalyticsRecord,
   buildAnalyticsSummary,
@@ -27,6 +27,26 @@ const ICONS = {
   pass: "P",
   analytics: "A"
 };
+
+const ORIGINAL_TESTS = JSON.parse(JSON.stringify(tests));
+const TEST_CONTENT_KEY = "student-test-content-v1";
+
+function replaceTests(nextTests) {
+  tests.splice(0, tests.length, ...JSON.parse(JSON.stringify(nextTests)));
+}
+
+function loadLocalTests() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(TEST_CONTENT_KEY));
+    return Array.isArray(saved) && saved.length ? saved : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveLocalTests(nextTests) {
+  localStorage.setItem(TEST_CONTENT_KEY, JSON.stringify(nextTests));
+}
 
 function createSubmitChallenge() {
   return {
@@ -53,6 +73,14 @@ function restoreFullscreenAfterExit() {
 
 function findTestById(testId) {
   return tests.find((test) => test.id === testId) || tests[0];
+}
+
+function shouldStackOptions(options = []) {
+  return options.some((option) => option.length > 42 || option.includes("\n"));
+}
+
+function getOptionsListClass(options) {
+  return `options-list ${shouldStackOptions(options) ? "options-list--stacked" : ""}`.trim();
 }
 
 function IconBadge({ value }) {
@@ -84,12 +112,12 @@ function DashboardPasswordModal({ password, error, onChange, onSubmit, onCancel 
         <div className="card__header">
           <div>
             <p className="section-label">Protected Area</p>
-            <h2 id="dashboard-password-title">Teacher Dashboard Access</h2>
+            <h2 id="dashboard-password-title">Teacher Access</h2>
           </div>
         </div>
 
         <p className="modal-card__text">
-          Enter the teacher password to view analytics. You can change this password later in [src/config.js].
+          Enter the teacher password to open protected teacher tools. You can change this password later in [src/config.js].
         </p>
 
         <div className="form-grid">
@@ -201,7 +229,7 @@ function AnalyticsPreview({ records, onOpenDashboard }) {
   );
 }
 
-function IntroScreen({ studentDraft, onDraftChange, onStart, analyticsRecords, onOpenDashboard }) {
+function IntroScreen({ studentDraft, onDraftChange, onStart, analyticsRecords, onOpenDashboard, onOpenPresentation, onOpenEditor }) {
   const selectedTest = findTestById(studentDraft.testId);
   const totalPoints = getTotalPoints(selectedTest.questions);
 
@@ -288,6 +316,12 @@ function IntroScreen({ studentDraft, onDraftChange, onStart, analyticsRecords, o
               </button>
               <button className="secondary-button" type="button" onClick={onOpenDashboard}>
                 Teacher Dashboard
+              </button>
+              <button className="secondary-button" type="button" onClick={onOpenPresentation}>
+                Teacher Presentation
+              </button>
+              <button className="secondary-button" type="button" onClick={onOpenEditor}>
+                Teacher Test Editor
               </button>
             </div>
           </form>
@@ -417,7 +451,7 @@ function TestScreen({
             </div>
           ) : null}
 
-          <div className="options-list" role="radiogroup" aria-label={`Question ${currentIndex + 1}`}>
+          <div className={getOptionsListClass(currentQuestion.options)} role="radiogroup" aria-label={`Question ${currentIndex + 1}`}>
             {currentQuestion.options.map((option) => {
               const selected = answers[currentQuestion.id] === option;
 
@@ -601,7 +635,7 @@ function StudentAnalysisScreen({ result, currentIndex, onSelectQuestion, onPrevi
         />
 
         <article className="card question-card">
-          <div className="analysis-write-zone">
+          <div className="student-analysis-content">
             <div className="question-card__meta">
               <span>
                 Question {currentIndex + 1} of {result.review.length}
@@ -624,7 +658,7 @@ function StudentAnalysisScreen({ result, currentIndex, onSelectQuestion, onPrevi
               </div>
             ) : null}
 
-            <div className="options-list" role="list" aria-label={`Question ${currentIndex + 1} answer choices`}>
+            <div className={getOptionsListClass(question?.options)} role="list" aria-label={`Question ${currentIndex + 1} answer choices`}>
               {(question?.options || []).map((option) => {
                 const isStudentAnswer = selectedAnswer === option;
                 const isCorrectAnswer = correctAnswer === option;
@@ -648,8 +682,6 @@ function StudentAnalysisScreen({ result, currentIndex, onSelectQuestion, onPrevi
                 );
               })}
             </div>
-
-            <AnalysisPencilLayer key={reviewItem?.id} />
           </div>
 
           <div className="question-card__actions">
@@ -670,6 +702,333 @@ function StudentAnalysisScreen({ result, currentIndex, onSelectQuestion, onPrevi
                 Finish Analysis
               </button>
             </div>
+          </div>
+        </article>
+      </section>
+    </main>
+  );
+}
+
+function TeacherTestEditor({ onSaveTests, onExit }) {
+  const [selectedTestId, setSelectedTestId] = useState(tests[0].id);
+  const [selectedQuestionIndex, setSelectedQuestionIndex] = useState(0);
+  const [draft, setDraft] = useState(() => JSON.parse(JSON.stringify(tests[0].questions[0])));
+  const [status, setStatus] = useState("");
+  const selectedTest = findTestById(selectedTestId);
+
+  function selectQuestion(index) {
+    setSelectedQuestionIndex(index);
+    setDraft(JSON.parse(JSON.stringify(selectedTest.questions[index])));
+    setStatus("");
+  }
+
+  function selectTest(testId) {
+    const nextTest = findTestById(testId);
+    setSelectedTestId(testId);
+    setSelectedQuestionIndex(0);
+    setDraft(JSON.parse(JSON.stringify(nextTest.questions[0])));
+    setStatus("");
+  }
+
+  function updateOption(index, value) {
+    setDraft((current) => {
+      const options = [...current.options];
+      const previousValue = options[index];
+      options[index] = value;
+
+      return {
+        ...current,
+        options,
+        correctAnswer: current.correctAnswer === previousValue ? value : current.correctAnswer
+      };
+    });
+  }
+
+  function addOption() {
+    setDraft((current) => ({ ...current, options: [...current.options, `Answer ${current.options.length + 1}`] }));
+  }
+
+  function removeOption(index) {
+    setDraft((current) => {
+      if (current.options.length <= 2) {
+        return current;
+      }
+
+      const removed = current.options[index];
+      const options = current.options.filter((_, optionIndex) => optionIndex !== index);
+      return {
+        ...current,
+        options,
+        correctAnswer: current.correctAnswer === removed ? options[0] : current.correctAnswer
+      };
+    });
+  }
+
+  async function saveQuestion() {
+    if (!draft.question.trim() || draft.options.some((option) => !option.trim()) || !draft.correctAnswer) {
+      setStatus("Question, answers, and correct answer are required.");
+      return;
+    }
+
+    const nextTests = JSON.parse(JSON.stringify(tests));
+    const test = nextTests.find((item) => item.id === selectedTestId);
+    test.questions[selectedQuestionIndex] = { ...draft, points: Math.max(1, Number(draft.points) || 1) };
+    await onSaveTests(nextTests);
+    setStatus("Question saved.");
+  }
+
+  async function addQuestion() {
+    const nextTests = JSON.parse(JSON.stringify(tests));
+    const test = nextTests.find((item) => item.id === selectedTestId);
+    const nextId = Math.max(0, ...test.questions.map((question) => Number(question.id) || 0)) + 1;
+    const question = {
+      id: nextId,
+      question: "New question",
+      supportText: "",
+      options: ["Answer 1", "Answer 2", "Answer 3", "Answer 4"],
+      correctAnswer: "Answer 1",
+      points: 1,
+      subject: test.subject,
+      topic: "General"
+    };
+    test.questions.push(question);
+    await onSaveTests(nextTests);
+    setSelectedQuestionIndex(test.questions.length - 1);
+    setDraft(question);
+    setStatus("New question added.");
+  }
+
+  async function duplicateQuestion() {
+    const nextTests = JSON.parse(JSON.stringify(tests));
+    const test = nextTests.find((item) => item.id === selectedTestId);
+    const nextId = Math.max(0, ...test.questions.map((question) => Number(question.id) || 0)) + 1;
+    const duplicate = { ...JSON.parse(JSON.stringify(draft)), id: nextId, question: `${draft.question} (copy)` };
+    test.questions.splice(selectedQuestionIndex + 1, 0, duplicate);
+    await onSaveTests(nextTests);
+    setSelectedQuestionIndex(selectedQuestionIndex + 1);
+    setDraft(duplicate);
+    setStatus("Question duplicated.");
+  }
+
+  async function deleteQuestion() {
+    if (selectedTest.questions.length <= 1 || !window.confirm("Delete this question?")) {
+      return;
+    }
+
+    const nextTests = JSON.parse(JSON.stringify(tests));
+    const test = nextTests.find((item) => item.id === selectedTestId);
+    test.questions.splice(selectedQuestionIndex, 1);
+    await onSaveTests(nextTests);
+    const nextIndex = Math.min(selectedQuestionIndex, test.questions.length - 1);
+    setSelectedQuestionIndex(nextIndex);
+    setDraft(JSON.parse(JSON.stringify(test.questions[nextIndex])));
+    setStatus("Question deleted.");
+  }
+
+  async function resetTests() {
+    if (!window.confirm("Reset every edited test and question to the original version?")) {
+      return;
+    }
+
+    await onSaveTests(ORIGINAL_TESTS);
+    setSelectedTestId(ORIGINAL_TESTS[0].id);
+    setSelectedQuestionIndex(0);
+    setDraft(JSON.parse(JSON.stringify(ORIGINAL_TESTS[0].questions[0])));
+    setStatus("All tests reset to original content.");
+  }
+
+  return (
+    <main className="page-shell page-shell--compact teacher-editor-page">
+      <header className="topbar teacher-editor-header">
+        <div>
+          <span className="eyebrow">Teacher Workspace</span>
+          <h1>Test Editor</h1>
+          <p className="topbar__subline">Edit questions, answers, correct choices, topics, and points.</p>
+        </div>
+        <div className="button-row">
+          <button className="secondary-button" type="button" onClick={resetTests}>Reset Original</button>
+          <button className="secondary-button" type="button" onClick={onExit}>Exit Editor</button>
+        </div>
+      </header>
+
+      <div className="teacher-test-switcher" role="group" aria-label="Choose test to edit">
+        {tests.map((test) => (
+          <button
+            key={test.id}
+            className={`teacher-test-switcher__item ${test.id === selectedTestId ? "is-selected" : ""}`}
+            type="button"
+            onClick={() => selectTest(test.id)}
+          >
+            <strong>{test.title}</strong>
+            <span>{test.questions.length} questions</span>
+          </button>
+        ))}
+      </div>
+
+      <section className="teacher-editor-layout">
+        <aside className="card teacher-editor-sidebar">
+          <div className="card__header">
+            <div>
+              <p className="section-label">{selectedTest.title}</p>
+              <h2>Questions</h2>
+            </div>
+            <button className="primary-button teacher-editor-add" type="button" onClick={addQuestion}>Add</button>
+          </div>
+          <div className="teacher-editor-question-list">
+            {selectedTest.questions.map((question, index) => (
+              <button
+                key={question.id}
+                className={`teacher-editor-question ${index === selectedQuestionIndex ? "is-selected" : ""}`}
+                type="button"
+                onClick={() => selectQuestion(index)}
+              >
+                <strong>{index + 1}</strong>
+                <span>{question.question}</span>
+              </button>
+            ))}
+          </div>
+        </aside>
+
+        <article className="card teacher-editor-form">
+          <div className="teacher-editor-form__actions">
+            <button className="secondary-button" type="button" onClick={duplicateQuestion}>Duplicate</button>
+            <button className="danger-button" type="button" onClick={deleteQuestion}>Delete</button>
+          </div>
+
+          <label className="field">
+            <span>Question</span>
+            <textarea value={draft.question} onChange={(event) => setDraft({ ...draft, question: event.target.value })} rows="3" />
+          </label>
+
+          <label className="field">
+            <span>Support text or code (optional)</span>
+            <textarea value={draft.supportText || ""} onChange={(event) => setDraft({ ...draft, supportText: event.target.value })} rows="5" />
+          </label>
+
+          <div className="teacher-editor-meta">
+            <label className="field">
+              <span>Topic</span>
+              <input value={draft.topic || ""} onChange={(event) => setDraft({ ...draft, topic: event.target.value })} />
+            </label>
+            <label className="field">
+              <span>Points</span>
+              <input type="number" min="1" value={draft.points || 1} onChange={(event) => setDraft({ ...draft, points: event.target.value })} />
+            </label>
+          </div>
+
+          <div className="teacher-editor-answers">
+            <div className="card__header">
+              <div>
+                <p className="section-label">Answers</p>
+                <h2>Choose the correct answer</h2>
+              </div>
+              <button className="secondary-button" type="button" onClick={addOption}>Add Answer</button>
+            </div>
+            {draft.options.map((option, index) => (
+              <div className={`teacher-editor-answer ${draft.correctAnswer === option ? "is-correct" : ""}`} key={index}>
+                <input
+                  type="radio"
+                  name="correct-answer"
+                  checked={draft.correctAnswer === option}
+                  onChange={() => setDraft({ ...draft, correctAnswer: option })}
+                  aria-label={`Mark answer ${index + 1} correct`}
+                />
+                <textarea value={option} onChange={(event) => updateOption(index, event.target.value)} rows="2" />
+                <button className="teacher-editor-remove" type="button" onClick={() => removeOption(index)} aria-label={`Remove answer ${index + 1}`}>×</button>
+              </div>
+            ))}
+          </div>
+
+          {status ? <p className="teacher-editor-status">{status}</p> : null}
+          <button className="primary-button teacher-editor-save" type="button" onClick={saveQuestion}>Save Question</button>
+        </article>
+      </section>
+    </main>
+  );
+}
+
+function TeacherPresentationScreen({ selectedTestId, currentIndex, onSelectTest, onSelectQuestion, onExit }) {
+  const selectedTest = findTestById(selectedTestId);
+  const question = selectedTest.questions[currentIndex] || selectedTest.questions[0];
+
+  return (
+    <main className="page-shell page-shell--compact teacher-presentation-page">
+      <section className="test-layout">
+        <header className="topbar teacher-presentation-header">
+          <div>
+            <span className="eyebrow">Teacher Presentation</span>
+            <h1>{selectedTest.title}</h1>
+            <p className="topbar__subline">
+              Question {currentIndex + 1} of {selectedTest.questions.length}
+            </p>
+          </div>
+
+          <div className="teacher-presentation-toolbar">
+            <div className="teacher-test-switcher" role="group" aria-label="Choose presentation test">
+              {tests.map((test) => {
+                const isSelected = test.id === selectedTestId;
+
+                return (
+                  <button
+                    key={test.id}
+                    className={`teacher-test-switcher__item ${isSelected ? "is-selected" : ""}`}
+                    type="button"
+                    aria-pressed={isSelected}
+                    onClick={() => onSelectTest(test.id)}
+                  >
+                    <strong>{test.title}</strong>
+                    <span>{test.questions.length} questions</span>
+                  </button>
+                );
+              })}
+            </div>
+            <button className="secondary-button" type="button" onClick={onExit}>
+              Exit Presentation
+            </button>
+          </div>
+        </header>
+
+        <QuestionNavigation
+          questions={selectedTest.questions}
+          answers={{}}
+          currentQuestionId={question.id}
+          onSelectQuestion={onSelectQuestion}
+        />
+
+        <article className="card question-card teacher-presentation-card">
+          <div className="analysis-write-zone">
+            <div className="question-card__meta">
+              <span>
+                Question {currentIndex + 1} of {selectedTest.questions.length}
+              </span>
+              <span>{question.subject || "Teacher Presentation"}</span>
+            </div>
+
+            <div className="question-card__prompt">
+              <h2>{question.question}</h2>
+              {question.supportText ? <pre className="question-card__support-text">{question.supportText}</pre> : null}
+            </div>
+
+            {question.supportImage ? (
+              <div className="question-media">
+                <img className="question-media__support" src={question.supportImage} alt={`${question.question} supporting figure`} />
+              </div>
+            ) : null}
+
+            <div className={getOptionsListClass(question.options)} role="list" aria-label={`Question ${currentIndex + 1} answer choices`}>
+              {question.options.map((option) => (
+                <div
+                  key={option}
+                  className={`option-card ${option === question.correctAnswer ? "is-correct-answer" : ""}`}
+                  role="listitem"
+                >
+                  <span className="option-card__indicator" />
+                  <span className="option-card__text">{option}</span>
+                </div>
+              ))}
+            </div>
+
+            <AnalysisPencilLayer key={`${selectedTest.id}-${question.id}`} />
           </div>
         </article>
       </section>
@@ -777,6 +1136,7 @@ function ScoreUnlockScreen({ input, error, onInputChange, onSubmit, onBackToAnal
 }
 
 export default function App() {
+  const [, setTestContentVersion] = useState(0);
   const [studentDraft, setStudentDraft] = useState({ name: "", surname: "", testId: tests[0].id });
   const [student, setStudent] = useState(null);
   const [selectedTestId, setSelectedTestId] = useState(tests[0].id);
@@ -794,6 +1154,9 @@ export default function App() {
   const [dashboardPasswordError, setDashboardPasswordError] = useState("");
   const [isDashboardUnlocked, setIsDashboardUnlocked] = useState(false);
   const [showDashboardPasswordModal, setShowDashboardPasswordModal] = useState(false);
+  const [teacherAccessTarget, setTeacherAccessTarget] = useState("teacher");
+  const [presentationTestId, setPresentationTestId] = useState(tests[0].id);
+  const [presentationQuestionIndex, setPresentationQuestionIndex] = useState(0);
   const [submitChallenge, setSubmitChallenge] = useState(createSubmitChallenge);
   const [submitChallengeAnswer, setSubmitChallengeAnswer] = useState("");
   const [submitChallengeError, setSubmitChallengeError] = useState("");
@@ -809,6 +1172,27 @@ export default function App() {
   const questionTimingsRef = useRef({});
 
   const selectedTest = findTestById(selectedTestId);
+
+  useEffect(() => {
+    const localTests = loadLocalTests();
+
+    if (localTests) {
+      replaceTests(localTests);
+      setTestContentVersion((version) => version + 1);
+    }
+
+    fetchRemoteTests()
+      .then((remoteTests) => {
+        if (!remoteTests) {
+          return;
+        }
+
+        replaceTests(remoteTests);
+        saveLocalTests(remoteTests);
+        setTestContentVersion((version) => version + 1);
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     const localRecords = loadAnalytics();
@@ -1120,9 +1504,46 @@ export default function App() {
       return;
     }
 
+    setTeacherAccessTarget("teacher");
     setDashboardPasswordInput("");
     setDashboardPasswordError("");
     setShowDashboardPasswordModal(true);
+  }
+
+  function requestTeacherPresentation() {
+    if (isDashboardUnlocked) {
+      setViewMode("teacherPresentation");
+      return;
+    }
+
+    setTeacherAccessTarget("teacherPresentation");
+    setDashboardPasswordInput("");
+    setDashboardPasswordError("");
+    setShowDashboardPasswordModal(true);
+  }
+
+  function requestTeacherEditor() {
+    if (isDashboardUnlocked) {
+      setViewMode("teacherEditor");
+      return;
+    }
+
+    setTeacherAccessTarget("teacherEditor");
+    setDashboardPasswordInput("");
+    setDashboardPasswordError("");
+    setShowDashboardPasswordModal(true);
+  }
+
+  async function handleSaveTests(nextTests) {
+    replaceTests(nextTests);
+    saveLocalTests(nextTests);
+    setTestContentVersion((version) => version + 1);
+
+    try {
+      await saveRemoteTests(nextTests);
+    } catch {
+      setApiStatusMessage("Test edits saved on this browser. Backend sync is currently unavailable.");
+    }
   }
 
   function openTeacherDashboard() {
@@ -1130,7 +1551,7 @@ export default function App() {
       setIsDashboardUnlocked(true);
       setDashboardPasswordError("");
       setShowDashboardPasswordModal(false);
-      setViewMode("teacher");
+      setViewMode(teacherAccessTarget);
       return;
     }
 
@@ -1143,6 +1564,11 @@ export default function App() {
     setShowDashboardPasswordModal(false);
     setDashboardPasswordInput("");
     setDashboardPasswordError("");
+  }
+
+  function selectPresentationTest(testId) {
+    setPresentationTestId(testId);
+    setPresentationQuestionIndex(0);
   }
 
   async function handleDeleteRecord(record) {
@@ -1387,6 +1813,22 @@ export default function App() {
     );
   }
 
+  if (viewMode === "teacherPresentation" && stage !== "active") {
+    return (
+      <TeacherPresentationScreen
+        selectedTestId={presentationTestId}
+        currentIndex={presentationQuestionIndex}
+        onSelectTest={selectPresentationTest}
+        onSelectQuestion={setPresentationQuestionIndex}
+        onExit={() => setViewMode("student")}
+      />
+    );
+  }
+
+  if (viewMode === "teacherEditor" && stage !== "active") {
+    return <TeacherTestEditor onSaveTests={handleSaveTests} onExit={() => setViewMode("student")} />;
+  }
+
   if (viewMode === "teacher" && stage !== "active") {
     return (
       <TeacherDashboard
@@ -1442,6 +1884,8 @@ export default function App() {
         onStart={startTest}
         analyticsRecords={analyticsRecords}
         onOpenDashboard={requestTeacherDashboard}
+        onOpenPresentation={requestTeacherPresentation}
+        onOpenEditor={requestTeacherEditor}
       />
       {showDashboardPasswordModal ? (
         <DashboardPasswordModal

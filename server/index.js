@@ -2,7 +2,16 @@ import cors from "cors";
 import express from "express";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { deleteAttempt, ensureSchema, getStorageMode, hasDatabaseConfig, listAttempts, upsertAttempt } from "./db.js";
+import {
+  deleteAttempt,
+  ensureSchema,
+  getStorageMode,
+  hasDatabaseConfig,
+  listAttempts,
+  loadTestContent,
+  saveTestContent,
+  upsertAttempt
+} from "./db.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -130,6 +139,37 @@ app.delete("/api/results/:attemptId", async (request, response) => {
     response.status(500).json({
       error: "Failed to delete result."
     });
+  }
+});
+
+app.get("/api/tests", async (_request, response) => {
+  try {
+    if (hasDatabaseConfig()) {
+      await ensureSchema();
+    }
+
+    response.json({ tests: await loadTestContent() });
+  } catch (error) {
+    console.error("Failed to fetch test content:", error);
+    response.status(500).json({ error: "Failed to fetch test content." });
+  }
+});
+
+app.put("/api/tests", async (request, response) => {
+  if (!Array.isArray(request.body?.tests) || !request.body.tests.length) {
+    response.status(400).json({ error: "A non-empty tests array is required." });
+    return;
+  }
+
+  try {
+    if (hasDatabaseConfig()) {
+      await ensureSchema();
+    }
+
+    response.json({ tests: await saveTestContent(request.body.tests) });
+  } catch (error) {
+    console.error("Failed to save test content:", error);
+    response.status(500).json({ error: "Failed to save test content." });
   }
 });
 

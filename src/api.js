@@ -58,3 +58,17 @@ export async function deleteRemoteResult(attemptId) {
 export async function fetchApiHealth() {
   return request("/health");
 }
+
+export async function fetchRemoteTests() {
+  const data = await request("/tests");
+  return Array.isArray(data.tests) ? data.tests : null;
+}
+
+export async function saveRemoteTests(tests) {
+  const data = await request("/tests", {
+    method: "PUT",
+    body: JSON.stringify({ tests })
+  });
+
+  return Array.isArray(data.tests) ? data.tests : tests;
+}

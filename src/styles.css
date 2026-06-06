@@ -412,7 +412,8 @@ button {
   color: #374760;
 }
 
-.field input {
+.field input,
+.field textarea {
   width: 100%;
   padding: 15px 18px;
   border: 1px solid rgba(193, 204, 223, 0.8);
@@ -425,7 +426,14 @@ button {
     border-color 160ms ease;
 }
 
-.field input:focus {
+.field textarea {
+  min-height: 88px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.field input:focus,
+.field textarea:focus {
   outline: none;
   transform: translateY(-1px);
   border-color: rgba(66, 136, 255, 0.45);
@@ -433,7 +441,8 @@ button {
 }
 
 .primary-button,
-.secondary-button {
+.secondary-button,
+.danger-button {
   border: 0;
   border-radius: 18px;
   padding: 14px 20px;
@@ -446,6 +455,7 @@ button {
 
 .primary-button:hover,
 .secondary-button:hover:not(:disabled),
+.danger-button:hover,
 .question-nav__item:hover,
 .option-card:hover {
   transform: translateY(-1px);
@@ -466,6 +476,12 @@ button {
 .secondary-button:disabled {
   opacity: 0.45;
   cursor: not-allowed;
+}
+
+.danger-button {
+  color: #a4372e;
+  background: rgba(255, 238, 236, 0.98);
+  box-shadow: inset 0 0 0 1px rgba(211, 100, 89, 0.3);
 }
 
 .primary-button--centered {
@@ -971,12 +987,14 @@ button {
   display: grid;
   gap: 14px;
   margin-top: 14px;
+  min-width: 0;
 }
 
 .question-card__prompt h2 {
   margin: 0;
   font-size: clamp(1.2rem, 2vw, 1.65rem);
   line-height: 1.35;
+  overflow-wrap: anywhere;
 }
 
 .question-card__support-text {
@@ -990,6 +1008,7 @@ button {
   font-size: 0.96rem;
   line-height: 1.55;
   white-space: pre-wrap;
+  overflow-wrap: anywhere;
   font-family: "SFMono-Regular", "Menlo", "Monaco", monospace;
 }
 
@@ -1024,6 +1043,11 @@ button {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
   margin-top: 16px;
+  min-width: 0;
+}
+
+.options-list--stacked {
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .option-card {
@@ -1032,6 +1056,7 @@ button {
   justify-content: flex-start;
   gap: 10px;
   width: 100%;
+  min-width: 0;
   min-height: 72px;
   padding: 16px 18px;
   border: 0;
@@ -1068,8 +1093,11 @@ button {
 }
 
 .option-card__text {
+  min-width: 0;
   white-space: pre-wrap;
   line-height: 1.5;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .option-card.is-selected .option-card__indicator {
@@ -1140,6 +1168,10 @@ button {
   padding-top: 6px;
 }
 
+.student-analysis-content {
+  display: block;
+}
+
 .analysis-write-zone .question-card__meta {
   padding-right: 170px;
 }
@@ -1175,6 +1207,241 @@ button {
   pointer-events: auto;
   min-height: 40px;
   padding: 9px 13px;
+}
+
+.teacher-presentation-page {
+  width: min(1440px, 100%);
+}
+
+.teacher-presentation-header {
+  align-items: end;
+}
+
+.teacher-presentation-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.teacher-test-switcher {
+  display: flex;
+  gap: 4px;
+  min-width: min(420px, 46vw);
+  padding: 4px;
+  border: 1px solid rgba(198, 210, 227, 0.92);
+  border-radius: 8px;
+  background: rgba(237, 243, 250, 0.9);
+}
+
+.teacher-test-switcher__item {
+  flex: 1 0 148px;
+  min-height: 54px;
+  padding: 7px 12px;
+  border: 0;
+  border-radius: 6px;
+  color: #52647c;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background 160ms ease,
+    box-shadow 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
+}
+
+.teacher-test-switcher__item:hover {
+  color: #174f94;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.teacher-test-switcher__item.is-selected {
+  color: #fff;
+  background: #176dcc;
+  box-shadow:
+    0 5px 12px rgba(23, 109, 204, 0.22),
+    inset 0 0 0 1px rgba(12, 77, 153, 0.2);
+}
+
+.teacher-test-switcher__item strong,
+.teacher-test-switcher__item span {
+  display: block;
+}
+
+.teacher-test-switcher__item strong {
+  font-size: 0.92rem;
+}
+
+.teacher-test-switcher__item span {
+  margin-top: 2px;
+  font-size: 0.72rem;
+  color: #8391a5;
+}
+
+.teacher-test-switcher__item.is-selected span {
+  color: rgba(255, 255, 255, 0.76);
+}
+
+.teacher-presentation-card {
+  padding: 30px;
+}
+
+.teacher-presentation-card .analysis-write-zone {
+  min-height: max(720px, calc(100vh - 260px));
+  padding-bottom: 220px;
+}
+
+.teacher-presentation-card .question-card__prompt h2 {
+  font-size: clamp(1.5rem, 2.6vw, 2.35rem);
+}
+
+.teacher-presentation-card .option-card {
+  min-height: 82px;
+  font-size: 1.08rem;
+}
+
+.teacher-editor-page {
+  width: min(1440px, 100%);
+}
+
+.teacher-editor-header {
+  align-items: end;
+}
+
+.teacher-editor-layout {
+  display: grid;
+  grid-template-columns: minmax(240px, 0.32fr) minmax(0, 1fr);
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.teacher-editor-sidebar,
+.teacher-editor-form {
+  min-width: 0;
+  padding: 22px;
+}
+
+.teacher-editor-sidebar {
+  align-self: start;
+  position: sticky;
+  top: 16px;
+}
+
+.teacher-editor-add {
+  min-width: 72px;
+  padding: 11px 14px;
+}
+
+.teacher-editor-question-list {
+  display: grid;
+  gap: 6px;
+  max-height: 68vh;
+  margin-top: 16px;
+  overflow-y: auto;
+}
+
+.teacher-editor-question {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  gap: 9px;
+  align-items: start;
+  width: 100%;
+  padding: 11px;
+  border: 0;
+  border-radius: 8px;
+  color: #40536c;
+  background: transparent;
+  text-align: left;
+}
+
+.teacher-editor-question strong {
+  color: #176dcc;
+}
+
+.teacher-editor-question span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.teacher-editor-question:hover,
+.teacher-editor-question.is-selected {
+  background: rgba(229, 239, 252, 0.94);
+}
+
+.teacher-editor-question.is-selected {
+  box-shadow: inset 3px 0 0 #176dcc;
+}
+
+.teacher-editor-form {
+  display: grid;
+  gap: 18px;
+}
+
+.teacher-editor-form__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.teacher-editor-meta {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 120px;
+  gap: 12px;
+}
+
+.teacher-editor-answers {
+  display: grid;
+  gap: 10px;
+}
+
+.teacher-editor-answer {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) 38px;
+  gap: 10px;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid rgba(202, 213, 230, 0.82);
+  border-radius: 8px;
+  background: rgba(247, 250, 253, 0.95);
+}
+
+.teacher-editor-answer.is-correct {
+  border-color: rgba(51, 162, 110, 0.48);
+  background: rgba(232, 248, 239, 0.96);
+}
+
+.teacher-editor-answer textarea {
+  width: 100%;
+  min-width: 0;
+  padding: 10px 12px;
+  resize: vertical;
+  border: 1px solid rgba(193, 204, 223, 0.8);
+  border-radius: 6px;
+  color: #152136;
+  background: #fff;
+  line-height: 1.45;
+}
+
+.teacher-editor-remove {
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 6px;
+  color: #a4372e;
+  background: rgba(255, 235, 233, 0.98);
+  font-size: 1.35rem;
+}
+
+.teacher-editor-status {
+  margin: 0;
+  color: #47627e;
+  font-weight: 700;
+}
+
+.teacher-editor-save {
+  justify-self: end;
+  min-width: 190px;
 }
 
 .review-number-grid {
@@ -1684,6 +1951,31 @@ button {
     gap: 14px;
   }
 
+  .teacher-presentation-toolbar {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .teacher-test-switcher {
+    min-width: 0;
+    width: 100%;
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+
+  .teacher-editor-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .teacher-editor-sidebar {
+    position: static;
+  }
+
+  .teacher-editor-question-list {
+    max-height: 280px;
+  }
+
   .metrics-grid--top {
     gap: 10px;
   }
@@ -1699,6 +1991,10 @@ button {
 
   .options-list {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .options-list--stacked {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .toolbar {
@@ -1749,8 +2045,41 @@ button {
   }
 
   .primary-button,
-  .secondary-button {
+  .secondary-button,
+  .danger-button {
     width: 100%;
     padding: 13px 16px;
+  }
+
+  .question-card {
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .option-card {
+    padding: 14px;
+  }
+
+  .teacher-editor-meta {
+    grid-template-columns: 1fr;
+  }
+
+  .teacher-editor-form__actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .teacher-editor-answer {
+    grid-template-columns: 22px minmax(0, 1fr) 34px;
+    padding: 8px;
+  }
+
+  .teacher-editor-save {
+    width: 100%;
+  }
+
+  .teacher-presentation-card .analysis-write-zone {
+    min-height: 720px;
+    padding-bottom: 260px;
   }
 }

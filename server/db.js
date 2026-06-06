@@ -6,6 +6,7 @@ const { Pool } = pg;
 
 let pool;
 const localStorePath = process.env.RESULT_STORE_PATH || path.resolve(process.cwd(), "server-data", "results.json");
+const localTestsPath = process.env.TEST_STORE_PATH || path.resolve(process.cwd(), "server-data", "tests.json");
 
 function getConnectionString() {
   return process.env.DATABASE_URL || process.env.POSTGRES_URL || process.env.POSTGRESQL_URL || "";
@@ -88,6 +89,14 @@ export async function ensureSchema() {
   await client.query(`
     CREATE INDEX IF NOT EXISTS idx_test_attempts_student
     ON test_attempts (student_surname, student_name);
+  `);
+
+  await client.query(`
+    CREATE TABLE IF NOT EXISTS test_content (
+      content_key TEXT PRIMARY KEY,
+      content_json JSONB NOT NULL,
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
   `);
 
   return true;
@@ -223,4 +232,48 @@ export async function deleteAttempt(attemptId) {
   );
 
   return result.rowCount > 0;
+}
+
+export async function loadTestContent() {
+  const client = getPool();
+
+  if (!client) {
+    try {
+      return JSON.parse(await fs.readFile(localTestsPath, "utf8"));
+    } catch (error) {
+      if (error.code === "ENOENT") {
+        return null;
+      }
+
+      throw error;
+    }
+  }
+
+  const result = await client.query(
+    `SELECT content_json FROM test_content WHERE content_key = 'tests';`
+  );
+
+  return result.rows[0]?.content_json || null;
+}
+
+export async function saveTestContent(tests) {
+  const client = getPool();
+
+  if (!client) {
+    await fs.mkdir(path.dirname(localTestsPath), { recursive: true });
+    await fs.writeFile(localTestsPath, JSON.stringify(tests, null, 2));
+    return tests;
+  }
+
+  await client.query(
+    `
+      INSERT INTO test_content (content_key, content_json, updated_at)
+      VALUES ('tests', $1::jsonb, NOW())
+      ON CONFLICT (content_key)
+      DO UPDATE SET content_json = EXCLUDED.content_json, updated_at = NOW();
+    `,
+    [JSON.stringify(tests)]
+  );
+
+  return tests;
 }
