@@ -530,14 +530,18 @@ function ResultScreen({ result, onRestart, onAnalyze }) {
   );
 }
 
-function AnalysisPencilLayer() {
+function AnalysisPencilLayer({ zoom = 1, onZoomChange }) {
   const canvasRef = useRef(null);
   const isDrawingRef = useRef(false);
-  const scrollYRef = useRef(null);
-  const wasScrollingRef = useRef(false);
+  const touchGestureRef = useRef(null);
+  const zoomRef = useRef(zoom);
   const strokeGestureRef = useRef(null);
   const lastCompletedTapRef = useRef(null);
   const [tool, setTool] = useState("pencil");
+
+  useEffect(() => {
+    zoomRef.current = zoom;
+  }, [zoom]);
 
   function getPoint(source) {
     const canvas = canvasRef.current;
@@ -659,47 +663,64 @@ function AnalysisPencilLayer() {
   }
 
   function handleTouchStart(event) {
-    if (event.touches.length >= 2) {
-      isDrawingRef.current = false;
-      strokeGestureRef.current = null;
-      wasScrollingRef.current = true;
-      scrollYRef.current = Array.from(event.touches).reduce((sum, touch) => sum + touch.clientY, 0) / event.touches.length;
+    event.preventDefault();
+
+    if (isDrawingRef.current) {
       return;
     }
 
-    wasScrollingRef.current = false;
-    event.preventDefault();
-    beginStroke(event.touches[0], "touch");
+    if (event.touches.length >= 2) {
+      const [first, second] = Array.from(event.touches);
+      touchGestureRef.current = {
+        lastCenterY: (first.clientY + second.clientY) / 2,
+        lastDistance: Math.hypot(second.clientX - first.clientX, second.clientY - first.clientY),
+        isPinching: false
+      };
+      return;
+    }
+
+    touchGestureRef.current = null;
   }
 
   function handleTouchMove(event) {
-    if (event.touches.length >= 2) {
-      event.preventDefault();
-      const nextY = Array.from(event.touches).reduce((sum, touch) => sum + touch.clientY, 0) / event.touches.length;
+    event.preventDefault();
 
-      if (scrollYRef.current !== null) {
-        window.scrollBy(0, scrollYRef.current - nextY);
-      }
-
-      scrollYRef.current = nextY;
+    if (isDrawingRef.current || event.touches.length < 2) {
       return;
     }
 
-    event.preventDefault();
-    continueStroke(event.touches[0]);
+    const [first, second] = Array.from(event.touches);
+    const nextCenterY = (first.clientY + second.clientY) / 2;
+    const nextDistance = Math.hypot(second.clientX - first.clientX, second.clientY - first.clientY);
+    const gesture = touchGestureRef.current;
+
+    if (!gesture) {
+      touchGestureRef.current = {
+        lastCenterY: nextCenterY,
+        lastDistance: nextDistance,
+        isPinching: false
+      };
+      return;
+    }
+
+    const distanceChange = Math.abs(nextDistance - gesture.lastDistance);
+    gesture.isPinching = gesture.isPinching || distanceChange > 3;
+
+    if (gesture.isPinching && gesture.lastDistance > 0) {
+      const nextZoom = Math.max(0.7, Math.min(2, zoomRef.current * (nextDistance / gesture.lastDistance)));
+      zoomRef.current = nextZoom;
+      onZoomChange?.(nextZoom);
+    } else {
+      window.scrollBy(0, gesture.lastCenterY - nextCenterY);
+    }
+
+    gesture.lastCenterY = nextCenterY;
+    gesture.lastDistance = nextDistance;
   }
 
   function handleTouchEnd() {
-    if (!wasScrollingRef.current) {
-      finishStroke("touch");
-    } else {
-      isDrawingRef.current = false;
-      strokeGestureRef.current = null;
-      lastCompletedTapRef.current = null;
-    }
-
-    wasScrollingRef.current = false;
-    scrollYRef.current = null;
+    touchGestureRef.current = null;
+    lastCompletedTapRef.current = null;
   }
 
   function clearCanvas() {
@@ -728,6 +749,9 @@ function AnalysisPencilLayer() {
         </button>
         <button className="analysis-pencil__tool" type="button" onClick={clearCanvas}>
           Clear
+        </button>
+        <button className="analysis-pencil__tool analysis-pencil__zoom" type="button" onClick={() => onZoomChange?.(1)}>
+          {Math.round(zoom * 100)}%
         </button>
       </div>
       <canvas
@@ -1098,6 +1122,7 @@ function TeacherTestEditor({ onSaveTests, onExit }) {
 function TeacherPresentationScreen({ selectedTestId, currentIndex, onSelectTest, onSelectQuestion, onExit }) {
   const selectedTest = findTestById(selectedTestId);
   const question = selectedTest.questions[currentIndex] || selectedTest.questions[0];
+  const [presentationZoom, setPresentationZoom] = useState(1);
 
   return (
     <main className="page-shell page-shell--compact teacher-presentation-page">
@@ -1143,7 +1168,7 @@ function TeacherPresentationScreen({ selectedTestId, currentIndex, onSelectTest,
           onSelectQuestion={onSelectQuestion}
         />
 
-        <article className="card question-card teacher-presentation-card">
+        <article className="card question-card teacher-presentation-card" style={{ zoom: presentationZoom }}>
           <div className="analysis-write-zone">
             <div className="question-card__meta">
               <span>
@@ -1176,7 +1201,11 @@ function TeacherPresentationScreen({ selectedTestId, currentIndex, onSelectTest,
               ))}
             </div>
 
-            <AnalysisPencilLayer key={`${selectedTest.id}-${question.id}`} />
+            <AnalysisPencilLayer
+              key={`${selectedTest.id}-${question.id}`}
+              zoom={presentationZoom}
+              onZoomChange={setPresentationZoom}
+            />
           </div>
         </article>
       </section>

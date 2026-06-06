@@ -1234,6 +1234,12 @@ button {
   background: #176dcc;
 }
 
+.analysis-pencil__zoom {
+  min-width: 58px;
+  font-variant-numeric: tabular-nums;
+  box-shadow: inset 1px 0 0 rgba(197, 210, 227, 0.92);
+}
+
 .teacher-presentation-page {
   width: min(1440px, 100%);
 }
@@ -1309,6 +1315,7 @@ button {
 
 .teacher-presentation-card {
   padding: 30px;
+  transform-origin: top left;
 }
 
 .teacher-presentation-card .analysis-write-zone {
