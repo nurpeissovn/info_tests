@@ -546,16 +546,15 @@ function AnalysisPencilLayer({ zoom = 1, onZoomChange }) {
   function getPoint(source) {
     const canvas = canvasRef.current;
     const rect = canvas.getBoundingClientRect();
-    const nativeEvent = source.nativeEvent || source;
     const layoutWidth = canvas.clientWidth || rect.width;
     const layoutHeight = canvas.clientHeight || rect.height;
-    const visualScale = rect.width / layoutWidth || zoomRef.current || 1;
-    const offsetX = Number.isFinite(nativeEvent.offsetX)
-      ? nativeEvent.offsetX
-      : (source.clientX - rect.left) / visualScale;
-    const offsetY = Number.isFinite(nativeEvent.offsetY)
-      ? nativeEvent.offsetY
-      : (source.clientY - rect.top) / visualScale;
+    const expectedScale = zoomRef.current || 1;
+    const measuredScaleX = rect.width / layoutWidth || 1;
+    const measuredScaleY = rect.height / layoutHeight || 1;
+    const scaleX = expectedScale !== 1 && Math.abs(measuredScaleX - 1) < 0.02 ? expectedScale : measuredScaleX;
+    const scaleY = expectedScale !== 1 && Math.abs(measuredScaleY - 1) < 0.02 ? expectedScale : measuredScaleY;
+    const offsetX = (source.clientX - rect.left) / scaleX;
+    const offsetY = (source.clientY - rect.top) / scaleY;
 
     return {
       x: (offsetX / layoutWidth) * canvas.width,
@@ -1150,7 +1149,12 @@ function TeacherPresentationScreen({ selectedTestId, currentIndex, onSelectTest,
   const [presentationZoom, setPresentationZoom] = useState(1);
 
   return (
-    <main className="page-shell page-shell--compact teacher-presentation-page">
+    <main
+      className="page-shell page-shell--compact teacher-presentation-page"
+      onContextMenu={(event) => event.preventDefault()}
+      onDragStart={(event) => event.preventDefault()}
+      onSelectStart={(event) => event.preventDefault()}
+    >
       <section className="test-layout">
         <header className="topbar teacher-presentation-header">
           <div>

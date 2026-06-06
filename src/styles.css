@@ -1242,6 +1242,20 @@ button {
 
 .teacher-presentation-page {
   width: min(1440px, 100%);
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.teacher-presentation-page * {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.teacher-presentation-page img {
+  -webkit-user-drag: none;
+  user-drag: none;
 }
 
 .teacher-presentation-header {
