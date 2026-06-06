@@ -534,7 +534,9 @@ function AnalysisPencilLayer() {
   const canvasRef = useRef(null);
   const isDrawingRef = useRef(false);
   const scrollYRef = useRef(null);
-  const lastTapAtRef = useRef(0);
+  const wasScrollingRef = useRef(false);
+  const strokeGestureRef = useRef(null);
+  const lastCompletedTapRef = useRef(null);
   const [tool, setTool] = useState("pencil");
 
   function getPoint(source) {
@@ -555,12 +557,19 @@ function AnalysisPencilLayer() {
     context.strokeStyle = "#1b84ff";
   }
 
-  function beginStroke(source) {
+  function beginStroke(source, pointerType) {
     const context = canvasRef.current.getContext("2d");
     const point = getPoint(source);
 
     configureContext(context);
     isDrawingRef.current = true;
+    strokeGestureRef.current = {
+      pointerType,
+      startedAt: Date.now(),
+      startX: point.x,
+      startY: point.y,
+      moved: false
+    };
     context.beginPath();
     context.moveTo(point.x, point.y);
   }
@@ -572,6 +581,15 @@ function AnalysisPencilLayer() {
 
     const context = canvasRef.current.getContext("2d");
     const point = getPoint(source);
+
+    if (strokeGestureRef.current) {
+      const distance = Math.hypot(point.x - strokeGestureRef.current.startX, point.y - strokeGestureRef.current.startY);
+
+      if (distance > 5) {
+        strokeGestureRef.current.moved = true;
+      }
+    }
+
     context.lineTo(point.x, point.y);
     context.stroke();
   }
@@ -581,27 +599,44 @@ function AnalysisPencilLayer() {
     isDrawingRef.current = false;
   }
 
+  function finishStroke(pointerType) {
+    const gesture = strokeGestureRef.current;
+    isDrawingRef.current = false;
+    strokeGestureRef.current = null;
+
+    if (
+      !gesture ||
+      gesture.pointerType !== pointerType ||
+      pointerType === "mouse" ||
+      gesture.moved ||
+      Date.now() - gesture.startedAt > 180
+    ) {
+      lastCompletedTapRef.current = null;
+      return;
+    }
+
+    const previousTap = lastCompletedTapRef.current;
+    const now = Date.now();
+
+    const tapDistance = previousTap ? Math.hypot(gesture.startX - previousTap.x, gesture.startY - previousTap.y) : Infinity;
+
+    if (previousTap?.pointerType === pointerType && now - previousTap.completedAt < 300 && tapDistance < 40) {
+      toggleTool();
+      lastCompletedTapRef.current = null;
+      return;
+    }
+
+    lastCompletedTapRef.current = { pointerType, completedAt: now, x: gesture.startX, y: gesture.startY };
+  }
+
   function handlePointerDown(event) {
     if (event.pointerType === "touch") {
       return;
     }
 
     event.preventDefault();
-
-    if (event.pointerType === "pen") {
-      const now = Date.now();
-
-      if (now - lastTapAtRef.current < 320) {
-        toggleTool();
-        lastTapAtRef.current = 0;
-        return;
-      }
-
-      lastTapAtRef.current = now;
-    }
-
     event.currentTarget.setPointerCapture?.(event.pointerId);
-    beginStroke(event);
+    beginStroke(event, event.pointerType);
   }
 
   function handlePointerMove(event) {
@@ -614,29 +649,27 @@ function AnalysisPencilLayer() {
   }
 
   function stopDrawing(event) {
-    isDrawingRef.current = false;
+    if (event?.pointerType && event.pointerType !== "touch") {
+      finishStroke(event.pointerType);
+    } else {
+      isDrawingRef.current = false;
+    }
+
     event?.currentTarget?.releasePointerCapture?.(event.pointerId);
   }
 
   function handleTouchStart(event) {
     if (event.touches.length >= 2) {
       isDrawingRef.current = false;
+      strokeGestureRef.current = null;
+      wasScrollingRef.current = true;
       scrollYRef.current = Array.from(event.touches).reduce((sum, touch) => sum + touch.clientY, 0) / event.touches.length;
       return;
     }
 
-    const now = Date.now();
-
-    if (now - lastTapAtRef.current < 320) {
-      event.preventDefault();
-      toggleTool();
-      lastTapAtRef.current = 0;
-      return;
-    }
-
-    lastTapAtRef.current = now;
+    wasScrollingRef.current = false;
     event.preventDefault();
-    beginStroke(event.touches[0]);
+    beginStroke(event.touches[0], "touch");
   }
 
   function handleTouchMove(event) {
@@ -657,7 +690,15 @@ function AnalysisPencilLayer() {
   }
 
   function handleTouchEnd() {
-    isDrawingRef.current = false;
+    if (!wasScrollingRef.current) {
+      finishStroke("touch");
+    } else {
+      isDrawingRef.current = false;
+      strokeGestureRef.current = null;
+      lastCompletedTapRef.current = null;
+    }
+
+    wasScrollingRef.current = false;
     scrollYRef.current = null;
   }
 
