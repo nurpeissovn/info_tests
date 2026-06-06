@@ -533,11 +533,13 @@ function ResultScreen({ result, onRestart, onAnalyze }) {
 function AnalysisPencilLayer() {
   const canvasRef = useRef(null);
   const isDrawingRef = useRef(false);
+  const scrollYRef = useRef(null);
+  const lastTapAtRef = useRef(0);
+  const [tool, setTool] = useState("pencil");
 
-  function getPoint(event) {
+  function getPoint(source) {
     const canvas = canvasRef.current;
     const rect = canvas.getBoundingClientRect();
-    const source = event.touches?.[0] || event;
 
     return {
       x: ((source.clientX - rect.left) / rect.width) * canvas.width,
@@ -545,34 +547,118 @@ function AnalysisPencilLayer() {
     };
   }
 
-  function startDrawing(event) {
-    event.preventDefault();
-    const canvas = canvasRef.current;
-    const context = canvas.getContext("2d");
-    const point = getPoint(event);
-
-    isDrawingRef.current = true;
-    context.lineWidth = 4;
+  function configureContext(context) {
     context.lineCap = "round";
+    context.lineJoin = "round";
+    context.globalCompositeOperation = tool === "eraser" ? "destination-out" : "source-over";
+    context.lineWidth = tool === "eraser" ? 34 : 4;
     context.strokeStyle = "#1b84ff";
+  }
+
+  function beginStroke(source) {
+    const context = canvasRef.current.getContext("2d");
+    const point = getPoint(source);
+
+    configureContext(context);
+    isDrawingRef.current = true;
     context.beginPath();
     context.moveTo(point.x, point.y);
   }
 
-  function draw(event) {
+  function continueStroke(source) {
     if (!isDrawingRef.current) {
       return;
     }
 
-    event.preventDefault();
     const context = canvasRef.current.getContext("2d");
-    const point = getPoint(event);
+    const point = getPoint(source);
     context.lineTo(point.x, point.y);
     context.stroke();
   }
 
-  function stopDrawing() {
+  function toggleTool() {
+    setTool((current) => (current === "pencil" ? "eraser" : "pencil"));
     isDrawingRef.current = false;
+  }
+
+  function handlePointerDown(event) {
+    if (event.pointerType === "touch") {
+      return;
+    }
+
+    event.preventDefault();
+
+    if (event.pointerType === "pen") {
+      const now = Date.now();
+
+      if (now - lastTapAtRef.current < 320) {
+        toggleTool();
+        lastTapAtRef.current = 0;
+        return;
+      }
+
+      lastTapAtRef.current = now;
+    }
+
+    event.currentTarget.setPointerCapture?.(event.pointerId);
+    beginStroke(event);
+  }
+
+  function handlePointerMove(event) {
+    if (event.pointerType === "touch" || !isDrawingRef.current) {
+      return;
+    }
+
+    event.preventDefault();
+    continueStroke(event);
+  }
+
+  function stopDrawing(event) {
+    isDrawingRef.current = false;
+    event?.currentTarget?.releasePointerCapture?.(event.pointerId);
+  }
+
+  function handleTouchStart(event) {
+    if (event.touches.length >= 2) {
+      isDrawingRef.current = false;
+      scrollYRef.current = Array.from(event.touches).reduce((sum, touch) => sum + touch.clientY, 0) / event.touches.length;
+      return;
+    }
+
+    const now = Date.now();
+
+    if (now - lastTapAtRef.current < 320) {
+      event.preventDefault();
+      toggleTool();
+      lastTapAtRef.current = 0;
+      return;
+    }
+
+    lastTapAtRef.current = now;
+    event.preventDefault();
+    beginStroke(event.touches[0]);
+  }
+
+  function handleTouchMove(event) {
+    if (event.touches.length >= 2) {
+      event.preventDefault();
+      const nextY = Array.from(event.touches).reduce((sum, touch) => sum + touch.clientY, 0) / event.touches.length;
+
+      if (scrollYRef.current !== null) {
+        window.scrollBy(0, scrollYRef.current - nextY);
+      }
+
+      scrollYRef.current = nextY;
+      return;
+    }
+
+    event.preventDefault();
+    continueStroke(event.touches[0]);
+  }
+
+  function handleTouchEnd() {
+    isDrawingRef.current = false;
+    scrollYRef.current = null;
   }
 
   function clearCanvas() {
@@ -582,20 +668,41 @@ function AnalysisPencilLayer() {
 
   return (
     <div className="analysis-pencil">
-      <button className="secondary-button analysis-pencil__clear" type="button" onClick={clearCanvas}>
-        Clear Pencil
-      </button>
+      <div className="analysis-pencil__toolbar" role="toolbar" aria-label="Drawing tools">
+        <button
+          className={`analysis-pencil__tool ${tool === "pencil" ? "is-active" : ""}`}
+          type="button"
+          aria-pressed={tool === "pencil"}
+          onClick={() => setTool("pencil")}
+        >
+          Pencil
+        </button>
+        <button
+          className={`analysis-pencil__tool ${tool === "eraser" ? "is-active" : ""}`}
+          type="button"
+          aria-pressed={tool === "eraser"}
+          onClick={() => setTool("eraser")}
+        >
+          Eraser
+        </button>
+        <button className="analysis-pencil__tool" type="button" onClick={clearCanvas}>
+          Clear
+        </button>
+      </div>
       <canvas
         ref={canvasRef}
         width="1200"
         height="760"
-        onMouseDown={startDrawing}
-        onMouseMove={draw}
-        onMouseUp={stopDrawing}
-        onMouseLeave={stopDrawing}
-        onTouchStart={startDrawing}
-        onTouchMove={draw}
-        onTouchEnd={stopDrawing}
+        onDoubleClick={toggleTool}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={stopDrawing}
+        onPointerCancel={stopDrawing}
+        onPointerLeave={stopDrawing}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchEnd}
       />
     </div>
   );

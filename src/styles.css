@@ -1173,7 +1173,7 @@ button {
 }
 
 .analysis-write-zone .question-card__meta {
-  padding-right: 170px;
+  padding-right: 250px;
 }
 
 .analysis-write-zone .question-card__prompt {
@@ -1199,14 +1199,39 @@ button {
   pointer-events: auto;
 }
 
-.analysis-pencil__clear {
+.analysis-pencil__toolbar {
   position: absolute;
   top: 4px;
   right: 0;
   z-index: 5;
+  display: flex;
+  gap: 4px;
+  padding: 4px;
   pointer-events: auto;
-  min-height: 40px;
-  padding: 9px 13px;
+  border: 1px solid rgba(197, 210, 227, 0.92);
+  border-radius: 8px;
+  background: rgba(241, 246, 252, 0.96);
+  box-shadow: 0 8px 18px rgba(63, 93, 128, 0.12);
+}
+
+.analysis-pencil__tool {
+  min-height: 36px;
+  padding: 7px 11px;
+  border: 0;
+  border-radius: 6px;
+  color: #52647c;
+  background: transparent;
+  font-weight: 800;
+}
+
+.analysis-pencil__tool:hover {
+  color: #174f94;
+  background: #fff;
+}
+
+.analysis-pencil__tool.is-active {
+  color: #fff;
+  background: #176dcc;
 }
 
 .teacher-presentation-page {
@@ -2076,6 +2101,20 @@ button {
 
   .teacher-editor-save {
     width: 100%;
+  }
+
+  .analysis-write-zone .question-card__meta {
+    padding-top: 52px;
+    padding-right: 0;
+  }
+
+  .analysis-pencil__toolbar {
+    left: 0;
+    right: auto;
+  }
+
+  .analysis-pencil__tool {
+    padding: 7px 10px;
   }
 
   .teacher-presentation-card .analysis-write-zone {
