@@ -546,10 +546,20 @@ function AnalysisPencilLayer({ zoom = 1, onZoomChange }) {
   function getPoint(source) {
     const canvas = canvasRef.current;
     const rect = canvas.getBoundingClientRect();
+    const nativeEvent = source.nativeEvent || source;
+    const layoutWidth = canvas.clientWidth || rect.width;
+    const layoutHeight = canvas.clientHeight || rect.height;
+    const visualScale = rect.width / layoutWidth || zoomRef.current || 1;
+    const offsetX = Number.isFinite(nativeEvent.offsetX)
+      ? nativeEvent.offsetX
+      : (source.clientX - rect.left) / visualScale;
+    const offsetY = Number.isFinite(nativeEvent.offsetY)
+      ? nativeEvent.offsetY
+      : (source.clientY - rect.top) / visualScale;
 
     return {
-      x: ((source.clientX - rect.left) / rect.width) * canvas.width,
-      y: ((source.clientY - rect.top) / rect.height) * canvas.height
+      x: (offsetX / layoutWidth) * canvas.width,
+      y: (offsetY / layoutHeight) * canvas.height
     };
   }
 
@@ -672,50 +682,65 @@ function AnalysisPencilLayer({ zoom = 1, onZoomChange }) {
     if (event.touches.length >= 2) {
       const [first, second] = Array.from(event.touches);
       touchGestureRef.current = {
-        lastCenterY: (first.clientY + second.clientY) / 2,
-        lastDistance: Math.hypot(second.clientX - first.clientX, second.clientY - first.clientY),
-        isPinching: false
+        type: "pinch",
+        lastDistance: Math.hypot(second.clientX - first.clientX, second.clientY - first.clientY)
       };
       return;
     }
 
-    touchGestureRef.current = null;
+    touchGestureRef.current = {
+      type: "scroll",
+      lastY: event.touches[0].clientY
+    };
   }
 
   function handleTouchMove(event) {
     event.preventDefault();
 
-    if (isDrawingRef.current || event.touches.length < 2) {
+    if (isDrawingRef.current) {
       return;
     }
 
-    const [first, second] = Array.from(event.touches);
-    const nextCenterY = (first.clientY + second.clientY) / 2;
-    const nextDistance = Math.hypot(second.clientX - first.clientX, second.clientY - first.clientY);
     const gesture = touchGestureRef.current;
 
-    if (!gesture) {
+    if (event.touches.length >= 2) {
+      const [first, second] = Array.from(event.touches);
+      const nextDistance = Math.hypot(second.clientX - first.clientX, second.clientY - first.clientY);
+
+      if (!gesture || gesture.type !== "pinch") {
+        touchGestureRef.current = {
+          type: "pinch",
+          lastDistance: nextDistance
+        };
+        return;
+      }
+
+      if (gesture.lastDistance > 0) {
+        const nextZoom = Math.max(0.7, Math.min(2, zoomRef.current * (nextDistance / gesture.lastDistance)));
+        zoomRef.current = nextZoom;
+        onZoomChange?.(nextZoom);
+      }
+
+      gesture.lastDistance = nextDistance;
+      return;
+    }
+
+    const nextY = event.touches[0]?.clientY;
+
+    if (nextY === undefined) {
+      return;
+    }
+
+    if (!gesture || gesture.type !== "scroll") {
       touchGestureRef.current = {
-        lastCenterY: nextCenterY,
-        lastDistance: nextDistance,
-        isPinching: false
+        type: "scroll",
+        lastY: nextY
       };
       return;
     }
 
-    const distanceChange = Math.abs(nextDistance - gesture.lastDistance);
-    gesture.isPinching = gesture.isPinching || distanceChange > 3;
-
-    if (gesture.isPinching && gesture.lastDistance > 0) {
-      const nextZoom = Math.max(0.7, Math.min(2, zoomRef.current * (nextDistance / gesture.lastDistance)));
-      zoomRef.current = nextZoom;
-      onZoomChange?.(nextZoom);
-    } else {
-      window.scrollBy(0, gesture.lastCenterY - nextCenterY);
-    }
-
-    gesture.lastCenterY = nextCenterY;
-    gesture.lastDistance = nextDistance;
+    window.scrollBy(0, gesture.lastY - nextY);
+    gesture.lastY = nextY;
   }
 
   function handleTouchEnd() {
