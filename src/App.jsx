@@ -546,19 +546,10 @@ function AnalysisPencilLayer({ zoom = 1, onZoomChange }) {
   function getPoint(source) {
     const canvas = canvasRef.current;
     const rect = canvas.getBoundingClientRect();
-    const layoutWidth = canvas.clientWidth || rect.width;
-    const layoutHeight = canvas.clientHeight || rect.height;
-    const expectedScale = zoomRef.current || 1;
-    const measuredScaleX = rect.width / layoutWidth || 1;
-    const measuredScaleY = rect.height / layoutHeight || 1;
-    const scaleX = expectedScale !== 1 && Math.abs(measuredScaleX - 1) < 0.02 ? expectedScale : measuredScaleX;
-    const scaleY = expectedScale !== 1 && Math.abs(measuredScaleY - 1) < 0.02 ? expectedScale : measuredScaleY;
-    const offsetX = (source.clientX - rect.left) / scaleX;
-    const offsetY = (source.clientY - rect.top) / scaleY;
 
     return {
-      x: (offsetX / layoutWidth) * canvas.width,
-      y: (offsetY / layoutHeight) * canvas.height
+      x: ((source.clientX - rect.left) / rect.width) * canvas.width,
+      y: ((source.clientY - rect.top) / rect.height) * canvas.height
     };
   }
 
@@ -1147,6 +1138,36 @@ function TeacherPresentationScreen({ selectedTestId, currentIndex, onSelectTest,
   const selectedTest = findTestById(selectedTestId);
   const question = selectedTest.questions[currentIndex] || selectedTest.questions[0];
   const [presentationZoom, setPresentationZoom] = useState(1);
+  const presentationCardRef = useRef(null);
+  const [presentationFrameHeight, setPresentationFrameHeight] = useState(null);
+
+  useEffect(() => {
+    const card = presentationCardRef.current;
+
+    if (!card) {
+      return undefined;
+    }
+
+    function updateFrameHeight() {
+      setPresentationFrameHeight(card.offsetHeight * presentationZoom);
+    }
+
+    updateFrameHeight();
+
+    if (typeof ResizeObserver === "undefined") {
+      window.addEventListener("resize", updateFrameHeight);
+      return () => window.removeEventListener("resize", updateFrameHeight);
+    }
+
+    const observer = new ResizeObserver(updateFrameHeight);
+    observer.observe(card);
+    window.addEventListener("resize", updateFrameHeight);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", updateFrameHeight);
+    };
+  }, [presentationZoom, selectedTest.id, question.id]);
 
   return (
     <main
@@ -1197,46 +1218,54 @@ function TeacherPresentationScreen({ selectedTestId, currentIndex, onSelectTest,
           onSelectQuestion={onSelectQuestion}
         />
 
-        <article className="card question-card teacher-presentation-card" style={{ zoom: presentationZoom }}>
-          <div className="analysis-write-zone">
-            <div className="question-card__meta">
-              <span>
-                Question {currentIndex + 1} of {selectedTest.questions.length}
-              </span>
-              <span>{question.subject || "Teacher Presentation"}</span>
-            </div>
-
-            <div className="question-card__prompt">
-              <h2>{question.question}</h2>
-              {question.supportText ? <pre className="question-card__support-text">{question.supportText}</pre> : null}
-            </div>
-
-            {question.supportImage ? (
-              <div className="question-media">
-                <img className="question-media__support" src={question.supportImage} alt={`${question.question} supporting figure`} />
+        <div
+          className="teacher-presentation-zoom-frame"
+          style={{
+            "--presentation-zoom": presentationZoom,
+            height: presentationFrameHeight ? `${presentationFrameHeight}px` : undefined
+          }}
+        >
+          <article ref={presentationCardRef} className="card question-card teacher-presentation-card">
+            <div className="analysis-write-zone">
+              <div className="question-card__meta">
+                <span>
+                  Question {currentIndex + 1} of {selectedTest.questions.length}
+                </span>
+                <span>{question.subject || "Teacher Presentation"}</span>
               </div>
-            ) : null}
 
-            <div className={getOptionsListClass(question.options)} role="list" aria-label={`Question ${currentIndex + 1} answer choices`}>
-              {question.options.map((option) => (
-                <div
-                  key={option}
-                  className={`option-card ${option === question.correctAnswer ? "is-correct-answer" : ""}`}
-                  role="listitem"
-                >
-                  <span className="option-card__indicator" />
-                  <span className="option-card__text">{option}</span>
+              <div className="question-card__prompt">
+                <h2>{question.question}</h2>
+                {question.supportText ? <pre className="question-card__support-text">{question.supportText}</pre> : null}
+              </div>
+
+              {question.supportImage ? (
+                <div className="question-media">
+                  <img className="question-media__support" src={question.supportImage} alt={`${question.question} supporting figure`} />
                 </div>
-              ))}
-            </div>
+              ) : null}
 
-            <AnalysisPencilLayer
-              key={`${selectedTest.id}-${question.id}`}
-              zoom={presentationZoom}
-              onZoomChange={setPresentationZoom}
-            />
-          </div>
-        </article>
+              <div className={getOptionsListClass(question.options)} role="list" aria-label={`Question ${currentIndex + 1} answer choices`}>
+                {question.options.map((option) => (
+                  <div
+                    key={option}
+                    className={`option-card ${option === question.correctAnswer ? "is-correct-answer" : ""}`}
+                    role="listitem"
+                  >
+                    <span className="option-card__indicator" />
+                    <span className="option-card__text">{option}</span>
+                  </div>
+                ))}
+              </div>
+
+              <AnalysisPencilLayer
+                key={`${selectedTest.id}-${question.id}`}
+                zoom={presentationZoom}
+                onZoomChange={setPresentationZoom}
+              />
+            </div>
+          </article>
+        </div>
       </section>
     </main>
   );

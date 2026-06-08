@@ -1327,8 +1327,20 @@ button {
   color: rgba(255, 255, 255, 0.76);
 }
 
+.teacher-presentation-zoom-frame {
+  position: relative;
+  width: calc(100% * var(--presentation-zoom));
+  min-width: 100%;
+  min-height: 1px;
+}
+
 .teacher-presentation-card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(100% / var(--presentation-zoom));
   padding: 30px;
+  transform: scale(var(--presentation-zoom));
   transform-origin: top left;
 }
 
