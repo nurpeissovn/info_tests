@@ -965,5 +965,548 @@
         "topic": "Python циклдер"
       }
     ]
+  },
+  {
+    "id": "test-3",
+    "title": "Test 3",
+    "description": "Informatics and web technologies practice test with 20 questions.",
+    "subject": "Informatics",
+    "durationMinutes": 60,
+    "passPercentage": 60,
+    "questions": [
+      {
+        "id": 1,
+        "question": "Файлмен жұмыс істеудің қанша кезеңі бар?",
+        "options": [
+          "2",
+          "1",
+          "4",
+          "3"
+        ],
+        "correctAnswer": "3",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Файлдар"
+      },
+      {
+        "id": 2,
+        "question": "Кез келген екі төбесі бір қабырғадан артық қабырғамен байланысатын граф",
+        "options": [
+          "Мультиграф",
+          "Қарапайым граф",
+          "Аралас граф",
+          "Ілмек"
+        ],
+        "correctAnswer": "Мультиграф",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Графтар"
+      },
+      {
+        "id": 3,
+        "question": "Қадамдық (итерация) цикл",
+        "options": [
+          "While",
+          "Continue",
+          "Break",
+          "For"
+        ],
+        "correctAnswer": "For",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Python циклдер"
+      },
+      {
+        "id": 4,
+        "question": "Программалаушылар өз тілінде бағдарламаларда орын алған қателерді «........» деп атайды",
+        "options": [
+          "дебаг",
+          "баг",
+          "трассировка",
+          "step-by-step"
+        ],
+        "correctAnswer": "баг",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Бағдарламалау"
+      },
+      {
+        "id": 5,
+        "question": "Программа нәтижесі:",
+        "supportText": "def UBT(n):\n    zerofix = 'aeoiyUAEОIYU'\n    count = 0\n    for i in n:\n        if i in zerofix:\n            count += 1\n    return count\n\nprint(UBT(\"bolaTov\"))",
+        "options": [
+          "Bolatov",
+          "0",
+          "bolatov",
+          "3"
+        ],
+        "correctAnswer": "3",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Python функциялар"
+      },
+      {
+        "id": 6,
+        "question": "Программа нәтижесі:",
+        "supportText": "a = 100\ni = 1\nwhile i < 10:\n    a += 1\n    if a % 5 == 0:\n        a += 10\n    i = i + 1\nprint(a)",
+        "options": [
+          "119",
+          "130",
+          "111",
+          "ERROR"
+        ],
+        "correctAnswer": "119",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Python циклдер"
+      },
+      {
+        "id": 7,
+        "question": "Python программалау тілінде файл тип(-тері) қандай?",
+        "options": [
+          "Бақылау файлы, оқылу файлы",
+          "Бинарлық файл, кестелік файл",
+          "Мәтіндік файл, бинарлық файл",
+          "Кестелік файл, ендірілген файл"
+        ],
+        "correctAnswer": "Мәтіндік файл, бинарлық файл",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Файлдар"
+      },
+      {
+        "id": 8,
+        "question": "Python-да мән берілмегенде шығатын қате түрі",
+        "options": [
+          "NameError: name 'b' is not defined",
+          "ZeroDivisionError: division by zero",
+          "TypeError: not all arguments converted during string formatting",
+          "TypeError: unsupported operand type(s) for +: 'int' and 'str'"
+        ],
+        "correctAnswer": "NameError: name 'b' is not defined",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Python қателері"
+      },
+      {
+        "id": 9,
+        "question": "input.txt файлына 2 3 5 мәндерін бергендегі программа коды нәтижесі:",
+        "supportText": "file = open('input.txt', 'r')\nasics = file.readline().strip()\nbrunello = asics.split()\nfile.close()\n\nnew_file = open('output.txt', 'w')\nZZZ = 1\nfor i in brunello:\n    ZZZ *= int(i)\nnew_file.write(str(ZZZ))\nnew_file.close()",
+        "options": [
+          "10",
+          "ZZZ",
+          "30",
+          "11"
+        ],
+        "correctAnswer": "30",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Python файлдар"
+      },
+      {
+        "id": 10,
+        "question": "Программа нәтижесі:",
+        "supportText": "a = \"Информатика\"\nb = \"Биология\"\nc = len(a)\nprint(c, a[5:] + b[:4])",
+        "options": [
+          "Информатика матикаБиол",
+          "матикаиол",
+          "11 матикаиол",
+          "11 матикаБиол"
+        ],
+        "correctAnswer": "11 матикаБиол",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Python жолдар"
+      },
+      {
+        "id": 11,
+        "question": "Циклда неше итерация орындалып тұр?",
+        "supportText": "i = 0\nwhile i < 100:\n    i = i + 1\nprint(i)",
+        "options": [
+          "99",
+          "101",
+          "0",
+          "100"
+        ],
+        "correctAnswer": "100",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Python циклдер"
+      },
+      {
+        "id": 12,
+        "question": "Шексіз цикл кезінде программаны тоқтату үшін пернелер комбинациясы",
+        "options": [
+          "Ctrl + C",
+          "Ctrl + X",
+          "Alt + Shift + Esc",
+          "Alt + Ctrl + C"
+        ],
+        "correctAnswer": "Ctrl + C",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Python циклдер"
+      },
+      {
+        "id": 13,
+        "question": "Сурет тегінің атрибуты",
+        "options": [
+          "href=\"\"",
+          "src=\"\"",
+          "border=\"\"",
+          "type=\"\""
+        ],
+        "correctAnswer": "src=\"\"",
+        "points": 1,
+        "subject": "Web Technologies",
+        "topic": "HTML"
+      },
+      {
+        "id": 14,
+        "question": "Қатардың аяқталуы. Келесі қатар жаңа азатжолдан басталады",
+        "options": [
+          "br",
+          "hr",
+          "s",
+          "i"
+        ],
+        "correctAnswer": "br",
+        "points": 1,
+        "subject": "Web Technologies",
+        "topic": "HTML"
+      },
+      {
+        "id": 15,
+        "question": "HTML құжаттың денесі. Негізгі мәтін осы тег арасында көрсетіледі.",
+        "options": [
+          "title",
+          "head",
+          "body",
+          "html"
+        ],
+        "correctAnswer": "body",
+        "points": 1,
+        "subject": "Web Technologies",
+        "topic": "HTML"
+      },
+      {
+        "id": 16,
+        "question": "<s> тегі",
+        "options": [
+          "Физикалық форматтау тегі",
+          "Логикалық форматтау тегі",
+          "Алгоритмдік форматтау тегі",
+          "Цифрлік форматтау тегі"
+        ],
+        "correctAnswer": "Физикалық форматтау тегі",
+        "points": 1,
+        "subject": "Web Technologies",
+        "topic": "HTML"
+      },
+      {
+        "id": 17,
+        "question": "Кестедегі жолдар және бағандар саны",
+        "supportText": "<table>\n  <tr><th>Есім</th><th>Жасы</th><th>Қала</th></tr>\n  <tr><td>Мейрамбек</td><td>25</td><td>Москва</td></tr>\n  <tr><td>Қуаныш</td><td>30</td><td>Санкт-Петербург</td></tr>\n  <tr><td>Ерғали</td><td>22</td><td>Казань</td></tr>\n</table>",
+        "options": [
+          "3 4",
+          "4 3",
+          "5 3",
+          "3 5"
+        ],
+        "correctAnswer": "4 3",
+        "points": 1,
+        "subject": "Web Technologies",
+        "topic": "HTML кестелер"
+      },
+      {
+        "id": 18,
+        "question": "Иконкалар, батырмалар және т.б. суреттерді сақтауға арналған формат",
+        "options": [
+          "SWF",
+          "JPEG",
+          "PNG",
+          "GIF"
+        ],
+        "correctAnswer": "PNG",
+        "points": 1,
+        "subject": "Web Technologies",
+        "topic": "Графика"
+      },
+      {
+        "id": 19,
+        "question": "Бұған мазмұнының көрінісі кіреді (беттер өлшемі, графика, аудио, мәтін)",
+        "options": [
+          "Front-end",
+          "Back-end",
+          "DevOps",
+          "Server"
+        ],
+        "correctAnswer": "Front-end",
+        "points": 1,
+        "subject": "Web Technologies",
+        "topic": "Web әзірлеу"
+      },
+      {
+        "id": 20,
+        "question": "Нысанның, оқиға немесе құбылыстың атрибуттары",
+        "options": ["кесте", "объект", "өріс", "жазба"],
+        "correctAnswer": "өріс",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Деректер базасы"
+      },
+      {
+        "id": 21,
+        "question": "Белгілі қасиеттер бар кестенің бағаны",
+        "options": ["дерек", "өріс", "кілттік өріс", "жазба"],
+        "correctAnswer": "өріс",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Деректер базасы"
+      },
+      {
+        "id": 22,
+        "question": "Деректер базасымен жұмыс істеуге мүмкіндік беретін интерфейс",
+        "options": ["MySQL", "SQL", "PostgreSQL", "PhpMyAdmin"],
+        "correctAnswer": "PhpMyAdmin",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Деректер базасы"
+      },
+      {
+        "id": 23,
+        "question": "Бір нәрсенің ерекше белгісі, тұрақты қасиеті, заттың ажырамас бөлшегі",
+        "options": ["байланыс", "кесте", "атрибут", "жазба"],
+        "correctAnswer": "атрибут",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Деректер базасы"
+      },
+      {
+        "id": 24,
+        "question": "Бейнежазба ойнатылмаған кезде немесе қолжетімді емес жағдайда суретке жол көрсетеді",
+        "options": ["autoplay", "poster", "preload", "controls"],
+        "correctAnswer": "poster",
+        "points": 1,
+        "subject": "Web Technologies",
+        "topic": "HTML медиа"
+      },
+      {
+        "id": 25,
+        "question": "Физикалық форматтау тегі болып табылмайды",
+        "options": ["em", "ins", "del", "i"],
+        "correctAnswer": "em",
+        "points": 1,
+        "subject": "Web Technologies",
+        "topic": "HTML"
+      },
+      {
+        "id": 26,
+        "question": "Нысан, нақты оқиға немесе құбылыс саны",
+        "options": ["жазба", "байланыс", "өріс", "нысан"],
+        "correctAnswer": "жазба",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Деректер базасы"
+      },
+      {
+        "id": 27,
+        "question": "Кесте ұяшықтары арасындағы сызықтар",
+        "options": ["rules", "border", "height", "width"],
+        "correctAnswer": "rules",
+        "points": 1,
+        "subject": "Web Technologies",
+        "topic": "HTML кестелер"
+      },
+      {
+        "id": 28,
+        "question": "Азатжолдың басы және соңы екендігін білдіреді",
+        "options": ["p", "b", "s", "u"],
+        "correctAnswer": "p",
+        "points": 1,
+        "subject": "Web Technologies",
+        "topic": "HTML"
+      },
+      {
+        "id": 29,
+        "question": "Кестедегі жазбаны бірегей түрде анықтайтын өріс",
+        "options": ["байланысқан өріс", "қайталанбайтын өріс", "кілттік өріс", "сыртқы өріс"],
+        "correctAnswer": "кілттік өріс",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Деректер базасы"
+      },
+      {
+        "id": 30,
+        "question": "Мағлұматтары деректер базасында сақталатын ақпараттық жүйенің элементі",
+        "options": ["байланыс", "нысан", "атрибут", "жазба"],
+        "correctAnswer": "нысан",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Деректер базасы"
+      },
+      {
+        "id": 31,
+        "question": "Деректерді бір немесе бірнеше кестелерден қолданушының қойған аты бойынша іріктеп алуға арналған құрал",
+        "options": ["бет", "модуль", "сұраныс", "макрос"],
+        "correctAnswer": "сұраныс",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Деректер базасы"
+      },
+      {
+        "id": 32,
+        "question": "Суреттің карта екенін анықтайды",
+        "options": ["hspace", "ismap", "usemap", "vspace"],
+        "correctAnswer": "ismap",
+        "points": 1,
+        "subject": "Web Technologies",
+        "topic": "HTML суреттер"
+      },
+      {
+        "id": 33,
+        "question": "Екінші деңгейлік тізім элементі және бұл <dl> дескрипторының аралығында жүреді",
+        "options": ["dl", "li", "dt", "dd"],
+        "correctAnswer": "dd",
+        "points": 1,
+        "subject": "Web Technologies",
+        "topic": "HTML тізімдер"
+      },
+      {
+        "id": 34,
+        "question": "Біркестелі немесе бір-бірімен байланысқан көп кестеден тұратын деректер базасы",
+        "options": ["иерархиялық", "NoSQL", "кестелік", "желілік"],
+        "correctAnswer": "кестелік",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Деректер базасы"
+      },
+      {
+        "id": 35,
+        "question": "Жазба элементтері реттеліп жазылады да, оның бір элементі негізгі, қалғандары бағыныңқы элементтер деп есептеледі. Мұнда элементтер нақты тізбек бойынша сатылы түрде реттеліп қойылады.",
+        "options": ["иерархиялық", "желілік", "SQL", "реляциялық"],
+        "correctAnswer": "иерархиялық",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Деректер базасы"
+      },
+      {
+        "id": 36,
+        "question": "Екі жаққа кезек-кезек сырғыту marquee мәні",
+        "options": ["behavior = 'right'", "behavior = 'left'", "behavior = 'alternate'", "behavior = 'right, left'"],
+        "correctAnswer": "behavior = 'alternate'",
+        "points": 1,
+        "subject": "Web Technologies",
+        "topic": "HTML"
+      },
+      {
+        "id": 37,
+        "question": "Белсенді емес сілтемелердің, әрі қаралмаған сілтемелер түстерін белгілейді",
+        "options": ["link", "vlink", "alink", "zlink"],
+        "correctAnswer": "link",
+        "points": 1,
+        "subject": "Web Technologies",
+        "topic": "HTML сілтемелер"
+      },
+      {
+        "id": 38,
+        "question": "Бұл скрипттегі host және passwd",
+        "supportText": "$mysqli = new mysqli();\n$mysqli->real_connect('host', 'username', 'passwd', 'dbname', 'port');",
+        "options": [
+          "қосылатын хост атауы, пайдаланушының аты",
+          "қосылатын хост атауы, сұраныс жасалатын деректер базасының атауы",
+          "қосылатын хост атауы, порт",
+          "қосылатын хост атауы, пайдаланушының паролі"
+        ],
+        "correctAnswer": "қосылатын хост атауы, пайдаланушының паролі",
+        "points": 1,
+        "subject": "Web Technologies",
+        "topic": "PHP және MySQL"
+      },
+      {
+        "id": 39,
+        "question": "Программаға 25 енгізгендегі нәтиже",
+        "supportText": "old = int(input(\"Jasynyzdy engiziniz \"))\nprint(\"Sizdin bilim aly kadamynyz:\", end=\" \")\nif 3 <= old < 6:\n    print(\"Balabaksha\")\nelif 6 <= old < 10:\n    print(\"Bastaysh mektep\")\nelif 10 <= old < 15:\n    print(\"Orta mektep\")\nelif 15 <= old:\n    print(\"Jogary mektep\")",
+        "options": ["Sizdin bilim aly kadamynyz: “Balabaksha”", "Sizdin bilim aly kadamynyz: “Bastaysh mektep”", "Sizdin bilim aly kadamynyz: “Orta mektep”", "Sizdin bilim aly kadamynyz: “Jogary mektep”"],
+        "correctAnswer": "Sizdin bilim aly kadamynyz: “Jogary mektep”",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Python шарттары"
+      },
+      {
+        "id": 40,
+        "question": "X санының цифрларының қосындысын табатын функцияны көрсет",
+        "options": [
+          "def summa(x):\n    sum = 0\n    while x != 0:\n        sum += x % 10\n        x = x // 10\n    return sum",
+          "def summa(x):\n    sum = 0\n    while x != 0:\n        sum += x % 10\n        x = x // 10",
+          "sum = 0\ndef summa(x):\n    while x != 0:\n        sum += x % 10\n        x = x // 10\n    return sum",
+          "def summa(x):\n    sum = 0\n    while x != 0:\n        sum += x // 10\n        x = x // 10"
+        ],
+        "correctAnswer": "def summa(x):\n    sum = 0\n    while x != 0:\n        sum += x % 10\n        x = x // 10\n    return sum",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Python функциялары"
+      },
+      {
+        "id": 41,
+        "question": "Кесте ішінен негізгі кілт бола алатын өрістер",
+        "supportText": "ЖСН | Тегі | Телефон | Қала | Жылы\n001122334455 | Нұртас | 87001112233 | Алматы | 2000\n112233445566 | Мұратова | 87002223344 | Астана | 1998\n223344556677 | Ермеков | 87003334455 | Шымкент | 2002\n334455667788 | Әлімбек | 87004445566 | Орал | 1995\n445566778899 | Сұлтан | 87005556677 | Ақтөбе | 1990",
+        "options": ["Қала, Жылы", "Аты, Телефон нөмірі", "ЖСН, Тегі", "ЖСН, Телефон нөмірі"],
+        "correctAnswer": "ЖСН, Телефон нөмірі",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Деректер базасы"
+      },
+      {
+        "id": 42,
+        "question": "out.txt файлындағы нәтиже",
+        "supportText": "in.txt:\n1234567\n7654321\n\nf1 = open(\"in.txt\", \"r\")\nf2 = open(\"out.txt\", \"w\")\nx = f1.readline()\ny = f1.readline()\nx = int(x)\ny = int(y)\nc = x + y\nc = str(c)\nf2.write(c)\nf1.close()\nf2.close()",
+        "options": ["7777777", "8888888", "9999999", "11111111"],
+        "correctAnswer": "8888888",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Python файлдары"
+      },
+      {
+        "id": 43,
+        "question": "Instruments кестесінің ішінен «Сыбызғы» атауын өшіру үшін қолданылатын SQL команда",
+        "supportText": "id | name | zhyly | index\n1 | Домбыра | 2023 | IND01\n2 | Жетіген | 2021 | IND02\n3 | Сыбызғы | 2020 | IND03\n4 | Шертер | 2019 | IND04\n5 | Асатаяқ | 2018 | IND05\n6 | Дабыл | 2022 | IND06",
+        "options": ["DELETE Instruments WHERE = “Сыбызғы”", "DELETE FROM Instruments WHERE = “name”", "DELETE Instruments name = “Сыбызғы”", "DELETE FROM Instruments WHERE name = “Сыбызғы”"],
+        "correctAnswer": "DELETE FROM Instruments WHERE name = “Сыбызғы”",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "SQL"
+      },
+      {
+        "id": 44,
+        "question": "Суретте көрсетілген топология түрі",
+        "supportText": "Төрт компьютердің әрқайсысы қалған компьютерлермен тікелей байланысқан.",
+        "options": ["иерархиялық", "жұлдыз", "шина", "ұялы"],
+        "correctAnswer": "ұялы",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Компьютерлік желілер"
+      },
+      {
+        "id": 45,
+        "question": "Программа нәтижесі",
+        "supportText": "a = \"Python-programmalau tili\"\nprint(a[::3])\nprint(a[::-1])",
+        "options": ["Ph-oaaui\nPython-programmalau tili", "Ph-oaaui\nilit ualammargorp-nohtyP", "Pto-rgamlu1\nPython-programmalau tili", "Pto-rgamlutl\nilit ualammargorp-nohtyP"],
+        "correctAnswer": "Ph-oaaui\nilit ualammargorp-nohtyP",
+        "points": 1,
+        "subject": "Informatics",
+        "topic": "Python жолдары"
+      },
+      {
+        "id": 46,
+        "question": "Суретте көрсетілген селектор түрі",
+        "supportText": "<style>\n.cl1 { text-decoration: underline; font-size: 80%; }\nA.cl1 { text-decoration: none; }\n</style>",
+        "options": ["класс", "идентификатор", "контекстік", "элемент"],
+        "correctAnswer": "класс",
+        "points": 1,
+        "subject": "Web Technologies",
+        "topic": "CSS селекторлары"
+      }
+    ]
   }
 ]

@@ -35,6 +35,14 @@ function replaceTests(nextTests) {
   tests.splice(0, tests.length, ...JSON.parse(JSON.stringify(nextTests)));
 }
 
+function mergeWithBundledTests(savedTests = []) {
+  const savedById = new Map(savedTests.map((test) => [test.id, test]));
+  const merged = ORIGINAL_TESTS.map((test) => savedById.get(test.id) || test);
+  const bundledIds = new Set(ORIGINAL_TESTS.map((test) => test.id));
+
+  return [...merged, ...savedTests.filter((test) => !bundledIds.has(test.id))];
+}
+
 function loadLocalTests() {
   try {
     const saved = JSON.parse(localStorage.getItem(TEST_CONTENT_KEY));
@@ -1416,7 +1424,7 @@ export default function App() {
     const localTests = loadLocalTests();
 
     if (localTests) {
-      replaceTests(localTests);
+      replaceTests(mergeWithBundledTests(localTests));
       setTestContentVersion((version) => version + 1);
     }
 
@@ -1426,9 +1434,11 @@ export default function App() {
           return;
         }
 
-        replaceTests(remoteTests);
-        saveLocalTests(remoteTests);
+        const mergedTests = mergeWithBundledTests(remoteTests);
+        replaceTests(mergedTests);
+        saveLocalTests(mergedTests);
         setTestContentVersion((version) => version + 1);
+        saveRemoteTests(mergedTests).catch(() => {});
       })
       .catch(() => {});
   }, []);
