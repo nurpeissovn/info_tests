@@ -680,6 +680,7 @@ function AnalysisPencilLayer({ zoom = 1, onZoomChange }) {
 
     touchGestureRef.current = {
       type: "scroll",
+      lastX: event.touches[0].clientX,
       lastY: event.touches[0].clientY
     };
   }
@@ -716,20 +717,23 @@ function AnalysisPencilLayer({ zoom = 1, onZoomChange }) {
     }
 
     const nextY = event.touches[0]?.clientY;
+    const nextX = event.touches[0]?.clientX;
 
-    if (nextY === undefined) {
+    if (nextX === undefined || nextY === undefined) {
       return;
     }
 
     if (!gesture || gesture.type !== "scroll") {
       touchGestureRef.current = {
         type: "scroll",
+        lastX: nextX,
         lastY: nextY
       };
       return;
     }
 
-    window.scrollBy(0, gesture.lastY - nextY);
+    window.scrollBy(gesture.lastX - nextX, gesture.lastY - nextY);
+    gesture.lastX = nextX;
     gesture.lastY = nextY;
   }
 
@@ -1249,7 +1253,7 @@ function TeacherPresentationScreen({ selectedTestId, currentIndex, onSelectTest,
                 {question.options.map((option) => (
                   <div
                     key={option}
-                    className={`option-card ${option === question.correctAnswer ? "is-correct-answer" : ""}`}
+                    className="option-card"
                     role="listitem"
                   >
                     <span className="option-card__indicator" />
